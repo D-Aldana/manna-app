@@ -19,6 +19,15 @@ const Title = styled.Text({
 
 const InputWrapper = styled.View({})
 
+const PlaceholderOverlay = styled.Text({
+  position: "absolute",
+  top: 14,
+  left: 14,
+  fontSize: 18,
+  fontFamily: "Nunito_400Regular",
+  lineHeight: 24,
+})
+
 const Input = styled(TextInput)({
   fontSize: 18,
   fontFamily: "Nunito_400Regular",
@@ -176,13 +185,16 @@ export default function PouringScreen() {
       <Title style={{ color: theme.accent }}>{title.text}</Title>
       <InputWrapper>
         <Input
-          placeholder={placeholder.text}
-          placeholderTextColor={theme.textSecondary}
           multiline
           value={text}
           onChangeText={setText}
           style={{ color: theme.text, borderColor: theme.border }}
         />
+        {text.length === 0 && placeholder.text.length > 0 && (
+          <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
+            {placeholder.text}
+          </PlaceholderOverlay>
+        )}
         {text.length > 0 && (
           <FadeIn>
             <SubmitOuter>
