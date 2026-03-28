@@ -51,7 +51,7 @@ const Input = styled(TextInput)({
 
 const SubmitOuter = styled.View({
   position: "absolute",
-  bottom: -56,
+  bottom: -65,
   left: 0,
   right: 0,
   alignItems: "center",
@@ -114,12 +114,30 @@ function FadeIn({ children }: { children: ReactNode }) {
   useEffect(() => {
     Animated.timing(opacity.current, {
       toValue: 1,
-      duration: 100,
+      duration: 300,
       useNativeDriver: true,
     }).start()
   }, [])
 
   return <Animated.View style={{ opacity: opacity.current }}>{children}</Animated.View>
+}
+
+function Fade({ visible, children }: { visible: boolean; children: ReactNode }) {
+  const opacity = useRef(new Animated.Value(0))
+
+  useEffect(() => {
+    Animated.timing(opacity.current, {
+      toValue: visible ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start()
+  }, [visible])
+
+  return (
+    <Animated.View style={{ opacity: opacity.current }} pointerEvents={visible ? "auto" : "none"}>
+      {children}
+    </Animated.View>
+  )
 }
 
 function useTypewriter(fullText: string, speed = 60, delay = 0) {
@@ -211,18 +229,16 @@ export default function PouringScreen() {
                   </PlaceholderOverlay>
                 )}
               </InputContainer>
-              {text.length > 0 && (
-                <FadeIn>
-                  <SubmitOuter>
-                    <SubmitButton
-                      style={{ backgroundColor: theme.accent }}
-                      onPress={() => setSubmitted(true)}
-                    >
-                      <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                    </SubmitButton>
-                  </SubmitOuter>
-                </FadeIn>
-              )}
+              <Fade visible={text.length > 0}>
+                <SubmitOuter>
+                  <SubmitButton
+                    style={{ backgroundColor: theme.accent }}
+                    onPress={() => setSubmitted(true)}
+                  >
+                    <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                  </SubmitButton>
+                </SubmitOuter>
+              </Fade>
             </InputWrapper>
           </FadeIn>
         </InputSection>
