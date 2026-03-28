@@ -49,6 +49,12 @@ function TabLayout() {
             title: "History",
           }}
         />
+        <Tabs.Screen
+          name="font-preview"
+          options={{
+            title: "Fonts",
+          }}
+        />
       </Tabs>
     </>
   )

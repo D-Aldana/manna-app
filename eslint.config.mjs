@@ -30,6 +30,7 @@ export default [
       ...reactHooksPlugin.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
       "react-hooks/refs": "off",
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
   prettierConfig,
