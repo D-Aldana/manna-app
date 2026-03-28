@@ -296,6 +296,9 @@ export default function PouringScreen() {
                 <InputContainer style={{ borderColor: theme.border }}>
                   <Input
                     multiline
+                    submitBehavior="submit"
+                    returnKeyType="send"
+                    onSubmitEditing={() => text.length > 0 && handleSubmit()}
                     value={text}
                     onChangeText={setText}
                     style={{ color: theme.accent }}
