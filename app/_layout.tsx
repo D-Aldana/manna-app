@@ -42,9 +42,8 @@ function TabLayout() {
           tabBarStyle: {
             position: "absolute",
             bottom: insets.bottom + 12,
-            alignSelf: "center",
-            left: 145,
-            right: 145,
+            marginHorizontal: "auto",
+            width: 120,
             backgroundColor: theme.tabBar,
             borderRadius: 24,
             height: 48,
