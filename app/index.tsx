@@ -151,7 +151,7 @@ function PulsingSelah({ color, subtextColor }: { color: string; subtextColor: st
   return (
     <Animated.View style={{ opacity: opacity.current, alignItems: "center" }}>
       <SelahText style={{ color }}>Selah</SelahText>
-      <SelahSubtext style={{ color: subtextColor }}>reflecting...</SelahSubtext>
+      <SelahSubtext style={{ color: subtextColor }}>be still...</SelahSubtext>
     </Animated.View>
   )
 }
