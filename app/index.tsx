@@ -103,11 +103,41 @@ function FadeIn({ children }: { children: ReactNode }) {
   return <Animated.View style={{ opacity: opacity.current }}>{children}</Animated.View>
 }
 
+function useTypewriter(fullText: string, speed = 60) {
+  const [displayed, setDisplayed] = useState("")
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    let i = 0
+    const interval = setInterval(() => {
+      i++
+      setDisplayed(fullText.slice(0, i))
+      if (i >= fullText.length) {
+        clearInterval(interval)
+        setDone(true)
+      }
+    }, speed)
+    return () => clearInterval(interval)
+  }, [fullText, speed])
+
+  return { displayed, done }
+}
+
 export default function PouringScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const hasVisited = useRef(false)
+  const isFirstVisit = !hasVisited.current
+  const { displayed: titleText } = useTypewriter(
+    "What\u2019s on your heart?",
+    isFirstVisit ? 60 : 0,
+  )
+
+  useEffect(() => {
+    hasVisited.current = true
+  })
 
   if (submitted) {
     return (
@@ -143,7 +173,7 @@ export default function PouringScreen() {
 
   return (
     <Container style={{ backgroundColor: theme.background }}>
-      <Title style={{ color: theme.accent }}>What&apos;s on your heart?</Title>
+      <Title style={{ color: theme.accent }}>{titleText}</Title>
       <InputWrapper>
         <Input
           placeholder="Let it out..."
