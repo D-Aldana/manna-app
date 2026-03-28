@@ -1,5 +1,10 @@
 import styled from "@emotion/native"
+import { LinearGradient } from "expo-linear-gradient"
 import { useTheme } from "@/theme/ThemeContext"
+
+const GradientBg = styled(LinearGradient)({
+  flex: 1,
+})
 
 const Container = styled.View({
   flex: 1,
@@ -9,15 +14,17 @@ const Container = styled.View({
 
 const Title = styled.Text({
   fontSize: 24,
-  fontWeight: "bold",
+  fontFamily: "CormorantGaramond_600SemiBold",
 })
 
 export default function HistoryScreen() {
   const { theme } = useTheme()
 
   return (
-    <Container style={{ backgroundColor: theme.background }}>
-      <Title style={{ color: theme.text }}>History</Title>
-    </Container>
+    <GradientBg colors={theme.backgroundGradient}>
+      <Container>
+        <Title style={{ color: theme.text }}>History</Title>
+      </Container>
+    </GradientBg>
   )
 }

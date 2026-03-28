@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef, type ReactNode } from "react"
 import { TextInput, ScrollView, Animated } from "react-native"
 import styled from "@emotion/native"
+import { LinearGradient } from "expo-linear-gradient"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
+
+const GradientBg = styled(LinearGradient)({
+  flex: 1,
+})
 
 const Container = styled.View({
   flex: 1,
@@ -275,82 +280,92 @@ export default function PouringScreen() {
 
   if (loading) {
     return (
-      <LoadingContainer style={{ backgroundColor: theme.background }}>
-        <FadeIn>
-          <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
-        </FadeIn>
-      </LoadingContainer>
+      <GradientBg colors={theme.backgroundGradient}>
+        <LoadingContainer>
+          <FadeIn>
+            <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
+          </FadeIn>
+        </LoadingContainer>
+      </GradientBg>
     )
   }
 
   if (submitted) {
     return (
-      <Container style={{ backgroundColor: theme.background, paddingTop: insets.top + 48 }}>
-        <ResponseContainer>
-          <Verse style={{ color: theme.text }}>
-            &ldquo;Come to me, all you who are weary and burdened, and I will give you rest.&rdquo;
-            {"\n"}— Matthew 11:28 (NIV)
-          </Verse>
-          <Commentary style={{ color: theme.textSecondary }}>
-            Jesus speaks these words as an invitation to anyone carrying the weight of life&apos;s
-            struggles. He doesn&apos;t ask you to have it all figured out first — He simply asks you
-            to come. The rest He offers isn&apos;t just physical; it&apos;s a deep, soul-level peace
-            that comes from trusting Him with your burdens.
-          </Commentary>
-          <Prayer style={{ color: theme.accent }}>
-            Lord, I bring my weariness to You. Help me to lay down what I&apos;ve been carrying and
-            find true rest in Your presence. Amen.
-          </Prayer>
-          <BackButton
-            style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
-            onPress={() => {
-              setSubmitted(false)
-              setText("")
-            }}
-          >
-            <BackText style={{ color: theme.text }}>New Pouring</BackText>
-          </BackButton>
-        </ResponseContainer>
-      </Container>
+      <GradientBg colors={theme.backgroundGradient}>
+        <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
+          <ResponseContainer>
+            <Verse style={{ color: theme.text }}>
+              &ldquo;Come to me, all you who are weary and burdened, and I will give you
+              rest.&rdquo;
+              {"\n"}— Matthew 11:28 (NIV)
+            </Verse>
+            <Commentary style={{ color: theme.textSecondary }}>
+              Jesus speaks these words as an invitation to anyone carrying the weight of life&apos;s
+              struggles. He doesn&apos;t ask you to have it all figured out first — He simply asks
+              you to come. The rest He offers isn&apos;t just physical; it&apos;s a deep, soul-level
+              peace that comes from trusting Him with your burdens.
+            </Commentary>
+            <Prayer style={{ color: theme.accent }}>
+              Lord, I bring my weariness to You. Help me to lay down what I&apos;ve been carrying
+              and find true rest in Your presence. Amen.
+            </Prayer>
+            <BackButton
+              style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
+              onPress={() => {
+                setSubmitted(false)
+                setText("")
+              }}
+            >
+              <BackText style={{ color: theme.text }}>New Pouring</BackText>
+            </BackButton>
+          </ResponseContainer>
+        </Container>
+      </GradientBg>
     )
   }
 
   return (
     <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
-      <Container style={{ backgroundColor: theme.background }}>
-        <Title style={{ color: theme.accent }}>{title.text}</Title>
-        {title.done && (
-          <InputSection style={{ top: "55%" }}>
-            <FadeIn>
-              <InputWrapper>
-                <InputContainer style={{ borderColor: theme.border }}>
-                  <Input
-                    multiline
-                    submitBehavior="submit"
-                    returnKeyType="send"
-                    onSubmitEditing={() => text.length > 0 && handleSubmit()}
-                    value={text}
-                    onChangeText={setText}
-                    style={{ color: theme.accent }}
-                  />
-                  {text.length === 0 && placeholder.text.length > 0 && (
-                    <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
-                      {placeholder.text}
-                    </PlaceholderOverlay>
-                  )}
-                </InputContainer>
-                <Fade visible={text.length > 0}>
-                  <SubmitOuter>
-                    <SubmitButton style={{ backgroundColor: theme.accent }} onPress={handleSubmit}>
-                      <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                    </SubmitButton>
-                  </SubmitOuter>
-                </Fade>
-              </InputWrapper>
-            </FadeIn>
-          </InputSection>
-        )}
-      </Container>
+      <GradientBg colors={theme.backgroundGradient}>
+        <Container>
+          <Title style={{ color: theme.accent }}>{title.text}</Title>
+          {title.done && (
+            <InputSection style={{ top: "55%" }}>
+              <FadeIn>
+                <InputWrapper>
+                  <InputContainer style={{ borderColor: theme.border }}>
+                    <Input
+                      multiline
+                      submitBehavior="submit"
+                      returnKeyType="send"
+                      onSubmitEditing={() => text.length > 0 && handleSubmit()}
+                      value={text}
+                      onChangeText={setText}
+                      style={{ color: theme.accent }}
+                    />
+                    {text.length === 0 && placeholder.text.length > 0 && (
+                      <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
+                        {placeholder.text}
+                      </PlaceholderOverlay>
+                    )}
+                  </InputContainer>
+                  <Fade visible={text.length > 0}>
+                    <SubmitOuter>
+                      <SubmitButton
+                        style={{ backgroundColor: theme.accent }}
+                        onPress={handleSubmit}
+                      >
+                        <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                      </SubmitButton>
+                    </SubmitOuter>
+                  </Fade>
+                </InputWrapper>
+              </FadeIn>
+            </InputSection>
+          )}
+        </Container>
+      </GradientBg>
     </Animated.View>
   )
 }
