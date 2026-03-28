@@ -1,8 +1,19 @@
 import { Tabs } from "expo-router";
+import { ThemeProvider, useTheme } from "../src/theme/ThemeContext";
 
-export default function RootLayout() {
+function TabLayout() {
+  const { theme } = useTheme();
+
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.background },
+        headerTintColor: theme.text,
+        tabBarStyle: { backgroundColor: theme.tabBar, borderTopColor: theme.border },
+        tabBarActiveTintColor: theme.tabBarActive,
+        tabBarInactiveTintColor: theme.tabBarInactive,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -16,5 +27,13 @@ export default function RootLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <TabLayout />
+    </ThemeProvider>
   );
 }
