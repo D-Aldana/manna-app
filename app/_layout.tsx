@@ -1,8 +1,6 @@
-import { Pressable, View } from "react-native"
+import { Pressable } from "react-native"
 import styled from "@emotion/native"
 import { Drawer } from "expo-router/drawer"
-import { DrawerActions } from "@react-navigation/native"
-import { useNavigation } from "expo-router"
 import { Feather } from "@expo/vector-icons"
 import { useFonts } from "expo-font"
 import {
@@ -21,28 +19,6 @@ const ToggleButton = styled(Pressable)({
   padding: 8,
 })
 
-const DrawerToggle = styled(Pressable)({
-  position: "absolute",
-  left: 16,
-  zIndex: 10,
-  padding: 8,
-})
-
-function MenuButton() {
-  const { theme } = useTheme()
-  const insets = useSafeAreaInsets()
-  const navigation = useNavigation()
-
-  return (
-    <DrawerToggle
-      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-      style={{ top: insets.top + 8 }}
-    >
-      <Feather name="menu" size={20} color={theme.textSecondary} />
-    </DrawerToggle>
-  )
-}
-
 function ThemeToggle() {
   const { theme, mode, toggleTheme } = useTheme()
   const insets = useSafeAreaInsets()
@@ -58,8 +34,7 @@ function DrawerLayout() {
   const { theme } = useTheme()
 
   return (
-    <View style={{ flex: 1 }}>
-      <MenuButton />
+    <>
       <ThemeToggle />
       <Drawer
         screenOptions={{
@@ -96,7 +71,7 @@ function DrawerLayout() {
           }}
         />
       </Drawer>
-    </View>
+    </>
   )
 }
 

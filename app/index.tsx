@@ -1,12 +1,22 @@
 import { useState, useEffect, useRef, type ReactNode } from "react"
-import { TextInput, ScrollView, Animated, View } from "react-native"
+import { TextInput, ScrollView, Animated, View, Pressable } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
+import { Feather } from "@expo/vector-icons"
+import { useNavigation } from "expo-router"
+import { DrawerActions } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
 
 const GradientBg = styled(LinearGradient)({
   flex: 1,
+})
+
+const MenuButton = styled(Pressable)({
+  position: "absolute",
+  left: 16,
+  zIndex: 10,
+  padding: 8,
 })
 
 const Container = styled.View({
@@ -282,6 +292,7 @@ function useTypewriter(fullText: string, speed = 60, delay = 0) {
 export default function PouringScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
+  const navigation = useNavigation()
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -358,6 +369,12 @@ export default function PouringScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <MenuButton
+        onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+        style={{ top: insets.top + 8 }}
+      >
+        <Feather name="menu" size={20} color={theme.textSecondary} />
+      </MenuButton>
       <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
         <GradientBg colors={theme.backgroundGradient}>
           <Container>
