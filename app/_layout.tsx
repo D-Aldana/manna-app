@@ -56,16 +56,9 @@ function TabLayout() {
             shadowOpacity: 0.08,
             shadowRadius: 8,
           },
-          tabBarItemStyle: {
-            paddingVertical: 8,
-          },
+          tabBarShowLabel: false,
           tabBarActiveTintColor: theme.tabBarActive,
           tabBarInactiveTintColor: theme.tabBarInactive,
-          tabBarLabelStyle: {
-            fontFamily: "Nunito_600SemiBold",
-            fontSize: 12,
-            letterSpacing: 0.5,
-          },
         }}
       >
         <Tabs.Screen
