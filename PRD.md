@@ -20,7 +20,7 @@
 
 ## 3. Functional Requirements
 
-### 3.1 Input Experience (The "Pouring")
+### 3.1 Input Experience (The "Pouring" — name subject to change)
 * **Clean Text Entry:** A distraction-free, full-screen text area for users to type thoughts freely.
 * **Voice-to-Text:** An integrated microphone toggle for users to speak their heart aloud instead of typing.
 * **Silent Context Inference:** The system automatically analyzes input to identify underlying themes (e.g., anxiety, grief, finances) without requiring user tags.
