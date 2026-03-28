@@ -11,14 +11,14 @@ export const LightTheme = {
 }
 
 export const DarkTheme = {
-  background: "#1A1B2E",
-  surface: "#242540",
+  background: "#231F1C",
+  surface: "#2E2926",
   text: "#E8E4DF",
-  textSecondary: "#9A9AB0",
+  textSecondary: "#A89E95",
   accent: "#D4A66A",
-  border: "#2E2F4A",
-  tabBar: "#1A1B2E",
-  tabBarInactive: "#6B6B8A",
+  border: "#3A3330",
+  tabBar: "#231F1C",
+  tabBarInactive: "#7A706A",
   tabBarActive: "#D4A66A",
 }
 
