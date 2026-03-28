@@ -46,7 +46,7 @@ function TabLayout() {
             position: "absolute",
             bottom: insets.bottom + 12,
             left: pillLeft,
-            width: pillWidth,
+            right: pillLeft,
             backgroundColor: theme.tabBar,
             borderRadius: 24,
             height: 48,
