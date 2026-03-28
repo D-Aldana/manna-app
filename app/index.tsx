@@ -22,8 +22,7 @@ const Input = styled(TextInput)({
   minHeight: 65,
 })
 
-const SubmitWrapper = styled.View({
-  alignSelf: "center",
+const SubmitOuter = styled.View({
   position: "absolute",
   bottom: -56,
   left: 0,
@@ -99,7 +98,6 @@ export default function PouringScreen() {
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
-  const showButton = text.length > 0
 
   if (submitted) {
     return (
@@ -144,16 +142,16 @@ export default function PouringScreen() {
           onChangeText={setText}
           style={{ color: theme.text, borderColor: theme.border }}
         />
-        {showButton && (
+        {text.length > 0 && (
           <FadeIn>
-            <SubmitWrapper>
+            <SubmitOuter>
               <SubmitButton
                 style={{ backgroundColor: theme.accent }}
                 onPress={() => setSubmitted(true)}
               >
                 <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
               </SubmitButton>
-            </SubmitWrapper>
+            </SubmitOuter>
           </FadeIn>
         )}
       </InputWrapper>
