@@ -1,13 +1,18 @@
-import { Pressable, Text } from "react-native";
+import { Pressable } from "react-native";
 import { Tabs } from "expo-router";
+import { Feather } from "@expo/vector-icons";
 import { ThemeProvider, useTheme } from "../src/theme/ThemeContext";
 
 function ThemeToggle() {
-  const { mode, toggleTheme } = useTheme();
+  const { theme, mode, toggleTheme } = useTheme();
 
   return (
     <Pressable onPress={toggleTheme} style={{ marginRight: 16 }}>
-      <Text style={{ fontSize: 22 }}>{mode === "light" ? "☀️" : "🌙"}</Text>
+      <Feather
+        name={mode === "light" ? "sun" : "moon"}
+        size={20}
+        color={theme.text}
+      />
     </Pressable>
   );
 }
