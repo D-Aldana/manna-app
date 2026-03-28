@@ -18,6 +18,7 @@
     "@emotion/react": "^11.14.0",
     "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/nunito": "^0.4.2",
+    "@react-navigation/drawer": "^7.9.8",
     "babel-preset-expo": "^55.0.14-canary-20260328-bdc6273",
     "expo": "55.0.10-canary-20260328-2049187",
     "expo-constants": "55.0.10-canary-20260328-2049187",
@@ -31,6 +32,7 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.4",
     "react-native-gesture-handler": "~2.30.0",
+    "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.23.0"
   },
