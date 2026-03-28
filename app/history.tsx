@@ -1,5 +1,5 @@
 import styled from "@emotion/native"
-import { useTheme } from "../src/theme/ThemeContext"
+import { useTheme } from "@/theme/ThemeContext"
 
 export default function HistoryScreen() {
   const { theme } = useTheme()

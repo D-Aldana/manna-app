@@ -3,7 +3,7 @@ import styled from "@emotion/native"
 import { Tabs } from "expo-router"
 import { Feather } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { ThemeProvider, useTheme } from "../src/theme/ThemeContext"
+import { ThemeProvider, useTheme } from "@/theme/ThemeContext"
 
 function ThemeToggle() {
   const { theme, mode, toggleTheme } = useTheme()
