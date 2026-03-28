@@ -7,11 +7,11 @@ function ThemeToggle() {
   const { theme, mode, toggleTheme } = useTheme();
 
   return (
-    <Pressable onPress={toggleTheme} style={{ marginRight: 16 }}>
+    <Pressable onPress={toggleTheme}>
       <Feather
         name={mode === "light" ? "sun" : "moon"}
         size={20}
-        color={theme.text}
+        color={theme.tabBarInactive}
       />
     </Pressable>
   );
@@ -23,9 +23,7 @@ function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
-        headerTintColor: theme.text,
-        headerRight: () => <ThemeToggle />,
+        headerShown: false,
         tabBarStyle: { backgroundColor: theme.tabBar, borderTopColor: theme.border },
         tabBarActiveTintColor: theme.tabBarActive,
         tabBarInactiveTintColor: theme.tabBarInactive,
@@ -41,6 +39,12 @@ function TabLayout() {
         name="history"
         options={{
           title: "History",
+        }}
+      />
+      <Tabs.Screen
+        name="theme-toggle"
+        options={{
+          tabBarButton: () => <ThemeToggle />,
         }}
       />
     </Tabs>
