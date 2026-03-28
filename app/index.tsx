@@ -105,22 +105,24 @@ function FadeIn({ children }: { children: ReactNode }) {
 
 function useTypewriter(fullText: string, speed = 60) {
   const [displayed, setDisplayed] = useState("")
-  const [done, setDone] = useState(false)
 
   useEffect(() => {
+    if (speed <= 0) {
+      setDisplayed(fullText)
+      return
+    }
     let i = 0
     const interval = setInterval(() => {
       i++
       setDisplayed(fullText.slice(0, i))
       if (i >= fullText.length) {
         clearInterval(interval)
-        setDone(true)
       }
     }, speed)
     return () => clearInterval(interval)
   }, [fullText, speed])
 
-  return { displayed, done }
+  return displayed
 }
 
 export default function PouringScreen() {
@@ -128,16 +130,7 @@ export default function PouringScreen() {
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
-  const hasVisited = useRef(false)
-  const isFirstVisit = !hasVisited.current
-  const { displayed: titleText } = useTypewriter(
-    "What\u2019s on your heart?",
-    isFirstVisit ? 60 : 0,
-  )
-
-  useEffect(() => {
-    hasVisited.current = true
-  })
+  const titleText = useTypewriter("What\u2019s on your heart?", 60)
 
   if (submitted) {
     return (
