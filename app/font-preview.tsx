@@ -1,11 +1,15 @@
 import { ScrollView } from "react-native"
 import styled from "@emotion/native"
-import { useFonts as useLora } from "@expo-google-fonts/lora"
-import { useFonts as useCormorant } from "@expo-google-fonts/cormorant-garamond"
-import { useFonts as usePlayfair } from "@expo-google-fonts/playfair-display"
-import { useFonts as useInter } from "@expo-google-fonts/inter"
-import { useFonts as useNunito } from "@expo-google-fonts/nunito"
-import { useFonts as useKarla } from "@expo-google-fonts/karla"
+import { useFonts } from "expo-font"
+import { Lora_400Regular, Lora_700Bold } from "@expo-google-fonts/lora"
+import {
+  CormorantGaramond_400Regular,
+  CormorantGaramond_600SemiBold,
+} from "@expo-google-fonts/cormorant-garamond"
+import { PlayfairDisplay_700Bold } from "@expo-google-fonts/playfair-display"
+import { Inter_400Regular } from "@expo-google-fonts/inter"
+import { Nunito_400Regular } from "@expo-google-fonts/nunito"
+import { Karla_400Regular } from "@expo-google-fonts/karla"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
 
@@ -47,36 +51,18 @@ export default function FontPreviewScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
 
-  const [loraLoaded] = useLora({
-    Lora_400Regular: require("@expo-google-fonts/lora/400Regular"),
-    Lora_700Bold: require("@expo-google-fonts/lora/700Bold"),
-  })
-  const [cormorantLoaded] = useCormorant({
-    CormorantGaramond_400Regular: require("@expo-google-fonts/cormorant-garamond/400Regular"),
-    CormorantGaramond_600SemiBold: require("@expo-google-fonts/cormorant-garamond/600SemiBold"),
-  })
-  const [playfairLoaded] = usePlayfair({
-    PlayfairDisplay_700Bold: require("@expo-google-fonts/playfair-display/700Bold"),
-  })
-  const [interLoaded] = useInter({
-    Inter_400Regular: require("@expo-google-fonts/inter/400Regular"),
-  })
-  const [nunitoLoaded] = useNunito({
-    Nunito_400Regular: require("@expo-google-fonts/nunito/400Regular"),
-  })
-  const [karlaLoaded] = useKarla({
-    Karla_400Regular: require("@expo-google-fonts/karla/400Regular"),
+  const [loaded] = useFonts({
+    Lora_400Regular,
+    Lora_700Bold,
+    CormorantGaramond_400Regular,
+    CormorantGaramond_600SemiBold,
+    PlayfairDisplay_700Bold,
+    Inter_400Regular,
+    Nunito_400Regular,
+    Karla_400Regular,
   })
 
-  if (
-    !loraLoaded ||
-    !cormorantLoaded ||
-    !playfairLoaded ||
-    !interLoaded ||
-    !nunitoLoaded ||
-    !karlaLoaded
-  )
-    return null
+  if (!loaded) return null
 
   const pairings = [
     {
