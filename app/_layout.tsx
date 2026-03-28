@@ -31,6 +31,7 @@ function ThemeToggle() {
 
 function TabLayout() {
   const { theme } = useTheme()
+  const insets = useSafeAreaInsets()
 
   return (
     <>
@@ -38,10 +39,28 @@ function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { backgroundColor: theme.tabBar, borderTopColor: theme.border },
+          tabBarStyle: {
+            position: "absolute",
+            bottom: insets.bottom + 12,
+            left: 40,
+            right: 40,
+            backgroundColor: theme.tabBar,
+            borderRadius: 28,
+            height: 56,
+            borderTopWidth: 0,
+            elevation: 0,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+          },
           tabBarActiveTintColor: theme.tabBarActive,
           tabBarInactiveTintColor: theme.tabBarInactive,
-          tabBarLabelStyle: { fontFamily: "Nunito_400Regular" },
+          tabBarLabelStyle: {
+            fontFamily: "Nunito_600SemiBold",
+            fontSize: 12,
+            letterSpacing: 0.5,
+          },
         }}
       >
         <Tabs.Screen
