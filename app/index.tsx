@@ -10,16 +10,24 @@ const Container = styled.View({
   paddingHorizontal: 24,
 })
 
+const Title = styled.Text({
+  fontSize: 32,
+  fontFamily: "CormorantGaramond_600SemiBold",
+  textAlign: "center",
+  marginBottom: 24,
+})
+
 const InputWrapper = styled.View({})
 
 const Input = styled(TextInput)({
   fontSize: 18,
-  lineHeight: 28,
+  fontFamily: "Nunito_400Regular",
+  lineHeight: 24,
   textAlignVertical: "center",
-  padding: 16,
-  borderWidth: 1,
+  padding: 14,
+  borderWidth: 3,
   borderRadius: 24,
-  minHeight: 65,
+  minHeight: 60,
 })
 
 const SubmitOuter = styled.View({
@@ -38,7 +46,7 @@ const SubmitButton = styled.Pressable({
 
 const SubmitText = styled.Text({
   fontSize: 16,
-  fontWeight: "600",
+  fontFamily: "Nunito_600SemiBold",
 })
 
 const ResponseContainer = styled(ScrollView)({
@@ -47,20 +55,22 @@ const ResponseContainer = styled(ScrollView)({
 })
 
 const Verse = styled.Text({
-  fontSize: 20,
-  fontWeight: "bold",
-  lineHeight: 30,
+  fontSize: 22,
+  fontFamily: "CormorantGaramond_600SemiBold",
+  lineHeight: 32,
   marginBottom: 16,
 })
 
 const Commentary = styled.Text({
   fontSize: 16,
+  fontFamily: "Nunito_400Regular",
   lineHeight: 26,
   marginBottom: 16,
 })
 
 const Prayer = styled.Text({
   fontSize: 16,
+  fontFamily: "CormorantGaramond_400Regular",
   fontStyle: "italic",
   lineHeight: 26,
   marginBottom: 16,
@@ -76,7 +86,7 @@ const BackButton = styled.Pressable({
 
 const BackText = styled.Text({
   fontSize: 16,
-  fontWeight: "600",
+  fontFamily: "Nunito_600SemiBold",
 })
 
 function FadeIn({ children }: { children: ReactNode }) {
@@ -133,9 +143,10 @@ export default function PouringScreen() {
 
   return (
     <Container style={{ backgroundColor: theme.background }}>
+      <Title style={{ color: theme.text }}>What&apos;s on your heart?</Title>
       <InputWrapper>
         <Input
-          placeholder="What's on your heart..."
+          placeholder="Let it out..."
           placeholderTextColor={theme.textSecondary}
           multiline
           value={text}

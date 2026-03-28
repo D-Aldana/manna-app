@@ -2,6 +2,12 @@ import { Pressable } from "react-native"
 import styled from "@emotion/native"
 import { Tabs } from "expo-router"
 import { Feather } from "@expo/vector-icons"
+import { useFonts } from "expo-font"
+import {
+  CormorantGaramond_400Regular,
+  CormorantGaramond_600SemiBold,
+} from "@expo-google-fonts/cormorant-garamond"
+import { Nunito_400Regular, Nunito_600SemiBold } from "@expo-google-fonts/nunito"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { ThemeProvider, useTheme } from "@/theme/ThemeContext"
 
@@ -35,6 +41,7 @@ function TabLayout() {
           tabBarStyle: { backgroundColor: theme.tabBar, borderTopColor: theme.border },
           tabBarActiveTintColor: theme.tabBarActive,
           tabBarInactiveTintColor: theme.tabBarInactive,
+          tabBarLabelStyle: { fontFamily: "Nunito_400Regular" },
         }}
       >
         <Tabs.Screen
@@ -49,18 +56,21 @@ function TabLayout() {
             title: "History",
           }}
         />
-        <Tabs.Screen
-          name="font-preview"
-          options={{
-            title: "Fonts",
-          }}
-        />
       </Tabs>
     </>
   )
 }
 
 export default function RootLayout() {
+  const [loaded] = useFonts({
+    CormorantGaramond_400Regular,
+    CormorantGaramond_600SemiBold,
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+  })
+
+  if (!loaded) return null
+
   return (
     <ThemeProvider>
       <TabLayout />
