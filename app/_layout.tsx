@@ -5,6 +5,13 @@ import { Feather } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { ThemeProvider, useTheme } from "@/theme/ThemeContext"
 
+const ToggleButton = styled(Pressable)({
+  position: "absolute",
+  right: 16,
+  zIndex: 10,
+  padding: 8,
+})
+
 function ThemeToggle() {
   const { theme, mode, toggleTheme } = useTheme()
   const insets = useSafeAreaInsets()
@@ -54,10 +61,3 @@ export default function RootLayout() {
     </ThemeProvider>
   )
 }
-
-const ToggleButton = styled(Pressable)({
-  position: "absolute",
-  right: 16,
-  zIndex: 10,
-  padding: 8,
-})
