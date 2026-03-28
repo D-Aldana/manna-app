@@ -19,24 +19,27 @@ const Title = styled.Text({
 
 const InputWrapper = styled.View({})
 
+const InputContainer = styled.View({
+  borderWidth: 3,
+  borderRadius: 24,
+  minHeight: 60,
+  justifyContent: "center",
+  paddingHorizontal: 18,
+  paddingVertical: 16,
+})
+
 const PlaceholderOverlay = styled.Text({
   position: "absolute",
-  top: 14,
-  left: 14,
+  left: 18,
   fontSize: 18,
   fontFamily: "Nunito_400Regular",
-  lineHeight: 24,
 })
 
 const Input = styled(TextInput)({
   fontSize: 18,
   fontFamily: "Nunito_400Regular",
-  lineHeight: 24,
-  textAlignVertical: "center",
-  padding: 14,
-  borderWidth: 3,
-  borderRadius: 24,
-  minHeight: 60,
+  padding: 0,
+  margin: 0,
 })
 
 const SubmitOuter = styled.View({
@@ -184,17 +187,14 @@ export default function PouringScreen() {
     <Container style={{ backgroundColor: theme.background }}>
       <Title style={{ color: theme.accent }}>{title.text}</Title>
       <InputWrapper>
-        <Input
-          multiline
-          value={text}
-          onChangeText={setText}
-          style={{ color: theme.text, borderColor: theme.border }}
-        />
-        {text.length === 0 && placeholder.text.length > 0 && (
-          <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
-            {placeholder.text}
-          </PlaceholderOverlay>
-        )}
+        <InputContainer style={{ borderColor: theme.border }}>
+          <Input multiline value={text} onChangeText={setText} style={{ color: theme.text }} />
+          {text.length === 0 && placeholder.text.length > 0 && (
+            <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
+              {placeholder.text}
+            </PlaceholderOverlay>
+          )}
+        </InputContainer>
         {text.length > 0 && (
           <FadeIn>
             <SubmitOuter>
