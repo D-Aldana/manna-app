@@ -81,12 +81,32 @@ const ResponseContainer = styled(ScrollView)({
   paddingHorizontal: 24,
 })
 
-const Verse = styled.Text({
+const VerseContainer = styled.View({
+  alignItems: "center",
+  marginBottom: 28,
+  paddingHorizontal: 8,
+})
+
+const QuoteMark = styled.Text({
+  fontSize: 56,
+  fontFamily: "CormorantGaramond_600SemiBold",
+  lineHeight: 56,
+  marginBottom: -8,
+})
+
+const VerseText = styled.Text({
   fontSize: 24,
   fontFamily: "CormorantGaramond_600SemiBold",
   lineHeight: 36,
   letterSpacing: 0.3,
-  marginBottom: 24,
+  textAlign: "center",
+})
+
+const VerseRef = styled.Text({
+  fontSize: 14,
+  fontFamily: "Nunito_400Regular",
+  marginTop: 12,
+  letterSpacing: 0.5,
 })
 
 const Commentary = styled.Text({
@@ -304,11 +324,13 @@ export default function PouringScreen() {
       <GradientBg colors={theme.backgroundGradient}>
         <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
           <ResponseContainer>
-            <Verse style={{ color: theme.text }}>
-              &ldquo;Come to me, all you who are weary and burdened, and I will give you
-              rest.&rdquo;
-              {"\n"}— Matthew 11:28 (NIV)
-            </Verse>
+            <VerseContainer>
+              <QuoteMark style={{ color: theme.accent }}>&ldquo;</QuoteMark>
+              <VerseText style={{ color: theme.text }}>
+                Come to me, all you who are weary and burdened, and I will give you rest.
+              </VerseText>
+              <VerseRef style={{ color: theme.textSecondary }}>— Matthew 11:28 (NIV)</VerseRef>
+            </VerseContainer>
             <Commentary style={{ color: theme.textSecondary }}>
               Jesus speaks these words as an invitation to anyone carrying the weight of life&apos;s
               struggles. He doesn&apos;t ask you to have it all figured out first — He simply asks
