@@ -20,7 +20,7 @@
 
 ## 3. Functional Requirements
 
-### 3.1 Input Experience (The "Heart Pour")
+### 3.1 Input Experience (The "Pouring")
 * **Clean Text Entry:** A distraction-free, full-screen text area for users to type thoughts freely.
 * **Voice-to-Text:** An integrated microphone toggle for users to speak their heart aloud instead of typing.
 * **Silent Context Inference:** The system automatically analyzes input to identify underlying themes (e.g., anxiety, grief, finances) without requiring user tags.
@@ -32,7 +32,7 @@
 
 ### 3.3 Dialogue & History
 * **Follow-up Capability:** Users can ask clarifying questions about the verse or its practical application.
-* **Persistent Journey:** An encrypted history of "Heart Pours" and verses received, allowing users to track their spiritual growth.
+* **Persistent Journey:** An encrypted history of "Pourings" and verses received, allowing users to track their spiritual growth.
 
 ---
 
@@ -65,7 +65,7 @@ As the app scales (targeting 5,000+ users), Manna will transition to a sponsorsh
 * **Strategic Placement:** Sponsors may only appear in "non-sacred" zones:
     * At the bottom of the **History** tab.
     * In a small "Message of Hope" card *after* the final prayer of a session has been read.
-* **Privacy Guardrail:** Advertisers never receive "Heart Pour" text. Targeting is based only on the **App Category** (Christian/Spirituality), not personal user data.
+* **Privacy Guardrail:** Advertisers never receive "Pouring" text. Targeting is based only on the **App Category** (Christian/Spirituality), not personal user data.
 
 ---
 
