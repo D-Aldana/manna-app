@@ -32,8 +32,6 @@ function ThemeToggle() {
 function TabLayout() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
-  const pillWidth = 120
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <ThemeToggle />
@@ -41,20 +39,11 @@ function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            position: "absolute",
-            bottom: insets.bottom + 12,
-            left: "50%",
-            transform: [{ translateX: -pillWidth / 2 }],
-            width: pillWidth,
             backgroundColor: theme.tabBar,
-            borderRadius: 24,
-            height: 48,
             borderTopWidth: 0,
             elevation: 0,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.12,
-            shadowRadius: 12,
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom,
           },
           tabBarShowLabel: false,
           tabBarActiveTintColor: theme.tabBarActive,
