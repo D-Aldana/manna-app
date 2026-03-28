@@ -9,15 +9,8 @@ function ThemeToggle() {
   const insets = useSafeAreaInsets();
 
   return (
-    <Pressable
-      onPress={toggleTheme}
-      style={[styles.toggle, { top: insets.top + 8 }]}
-    >
-      <Feather
-        name={mode === "light" ? "sun" : "moon"}
-        size={20}
-        color={theme.textSecondary}
-      />
+    <Pressable onPress={toggleTheme} style={[styles.toggle, { top: insets.top + 8 }]}>
+      <Feather name={mode === "light" ? "sun" : "moon"} size={20} color={theme.textSecondary} />
     </Pressable>
   );
 }
