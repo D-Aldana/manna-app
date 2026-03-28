@@ -156,7 +156,7 @@ export default function PouringScreen() {
   const [submitted, setSubmitted] = useState(false)
   const title = useTypewriter("What\u2019s on your heart?", 45)
   const titleDuration = "What\u2019s on your heart?".length * 45
-  const placeholder = useTypewriter("Let it out...", 45, titleDuration + 300)
+  const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 300)
 
   if (submitted) {
     return (
