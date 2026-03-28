@@ -28,6 +28,7 @@
     "react-native-screens": "~4.23.0"
   },
   "devDependencies": {
+    "@types/expo__vector-icons": "^9.0.1",
     "@types/react": "~19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.57.2",
     "@typescript-eslint/parser": "^8.57.2",
