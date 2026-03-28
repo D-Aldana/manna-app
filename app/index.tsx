@@ -126,8 +126,12 @@ const SelahSubtext = styled.Text({
   marginTop: 8,
 })
 
+const selahPhrases = ["be still...", "listening...", "searching...", "meditating...", "seeking..."]
+
 function PulsingSelah({ color, subtextColor }: { color: string; subtextColor: string }) {
   const opacity = useRef(new Animated.Value(0.3))
+  const [phraseIndex, setPhraseIndex] = useState(0)
+  const subtextOpacity = useRef(new Animated.Value(1))
 
   useEffect(() => {
     const pulse = Animated.loop(
@@ -148,10 +152,30 @@ function PulsingSelah({ color, subtextColor }: { color: string; subtextColor: st
     return () => pulse.stop()
   }, [])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.timing(subtextOpacity.current, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setPhraseIndex((prev) => (prev + 1) % selahPhrases.length)
+        Animated.timing(subtextOpacity.current, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start()
+      })
+    }, 2400)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <Animated.View style={{ opacity: opacity.current, alignItems: "center" }}>
       <SelahText style={{ color }}>Selah</SelahText>
-      <SelahSubtext style={{ color: subtextColor }}>be still...</SelahSubtext>
+      <Animated.View style={{ opacity: subtextOpacity.current }}>
+        <SelahSubtext style={{ color: subtextColor }}>{selahPhrases[phraseIndex]}</SelahSubtext>
+      </Animated.View>
     </Animated.View>
   )
 }
