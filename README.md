@@ -6,6 +6,11 @@ A private, reverent mobile app for Christians to process thoughts and struggles 
 
 Users write a reflection ("Pouring"), and Manna returns a single NIV Bible verse with an empathetic explanation and closing prayer prompt. Built with privacy and minimalism at its core — no push notifications, no social features, no ads in sacred spaces.
 
+### Themes
+
+- **Light/Morning** — Warm off-white creams with soft brown accents
+- **Dark/Sanctuary** — Warm brownish charcoals with amber accents
+
 ## Tech Stack
 
 - **Expo** (React Native) — iOS & Android
