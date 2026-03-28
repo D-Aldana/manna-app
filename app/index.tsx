@@ -126,7 +126,13 @@ const SelahSubtext = styled.Text({
   marginTop: 8,
 })
 
-const selahPhrases = ["be still...", "listening...", "searching...", "meditating...", "seeking..."]
+const selahPhrases = [
+  "be still...",
+  "be present...",
+  "breathe...",
+  "rest here...",
+  "wait in peace...",
+]
 
 function PulsingSelah({ color, subtextColor }: { color: string; subtextColor: string }) {
   const opacity = useRef(new Animated.Value(0.3))
