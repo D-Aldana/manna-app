@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react"
-import { TextInput, ScrollView, LayoutAnimation, UIManager, Platform } from "react-native"
+import { useState } from "react"
+import { TextInput, ScrollView } from "react-native"
 import styled from "@emotion/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
@@ -9,6 +9,8 @@ const Container = styled.View({
   justifyContent: "center",
   paddingHorizontal: 24,
 })
+
+const InputWrapper = styled.View({})
 
 const Input = styled(TextInput)({
   fontSize: 18,
@@ -22,7 +24,11 @@ const Input = styled(TextInput)({
 
 const SubmitWrapper = styled.View({
   alignSelf: "center",
-  marginTop: 16,
+  position: "absolute",
+  bottom: -56,
+  left: 0,
+  right: 0,
+  alignItems: "center",
 })
 
 const SubmitButton = styled.Pressable({
@@ -81,22 +87,6 @@ export default function PouringScreen() {
   const [submitted, setSubmitted] = useState(false)
   const showButton = text.length > 0
 
-  const handleTextChange = useCallback(
-    (value: string) => {
-      const wasEmpty = text.length === 0
-      const willBeEmpty = value.length === 0
-      if (wasEmpty !== willBeEmpty) {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-      }
-      setText(value)
-    },
-    [text.length],
-  )
-
-  if (Platform.OS === "android") {
-    UIManager.setLayoutAnimationEnabledExperimental?.(true)
-  }
-
   if (submitted) {
     return (
       <Container style={{ backgroundColor: theme.background, paddingTop: insets.top + 48 }}>
@@ -131,24 +121,26 @@ export default function PouringScreen() {
 
   return (
     <Container style={{ backgroundColor: theme.background }}>
-      <Input
-        placeholder="What's on your heart..."
-        placeholderTextColor={theme.textSecondary}
-        multiline
-        value={text}
-        onChangeText={handleTextChange}
-        style={{ color: theme.text, borderColor: theme.border }}
-      />
-      {showButton && (
-        <SubmitWrapper>
-          <SubmitButton
-            style={{ backgroundColor: theme.accent }}
-            onPress={() => setSubmitted(true)}
-          >
-            <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-          </SubmitButton>
-        </SubmitWrapper>
-      )}
+      <InputWrapper>
+        <Input
+          placeholder="What's on your heart..."
+          placeholderTextColor={theme.textSecondary}
+          multiline
+          value={text}
+          onChangeText={setText}
+          style={{ color: theme.text, borderColor: theme.border }}
+        />
+        {showButton && (
+          <SubmitWrapper>
+            <SubmitButton
+              style={{ backgroundColor: theme.accent }}
+              onPress={() => setSubmitted(true)}
+            >
+              <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+            </SubmitButton>
+          </SubmitWrapper>
+        )}
+      </InputWrapper>
     </Container>
   )
 }
