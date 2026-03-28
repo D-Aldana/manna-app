@@ -108,6 +108,54 @@ const BackText = styled.Text({
   fontFamily: "Nunito_600SemiBold",
 })
 
+const LoadingContainer = styled.View({
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+})
+
+const SelahText = styled.Text({
+  fontSize: 40,
+  fontFamily: "CormorantGaramond_600SemiBold",
+  fontStyle: "italic",
+})
+
+const SelahSubtext = styled.Text({
+  fontSize: 14,
+  fontFamily: "Nunito_400Regular",
+  marginTop: 8,
+})
+
+function PulsingSelah({ color, subtextColor }: { color: string; subtextColor: string }) {
+  const opacity = useRef(new Animated.Value(0.3))
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity.current, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity.current, {
+          toValue: 0.3,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ]),
+    )
+    pulse.start()
+    return () => pulse.stop()
+  }, [])
+
+  return (
+    <Animated.View style={{ opacity: opacity.current, alignItems: "center" }}>
+      <SelahText style={{ color }}>Selah</SelahText>
+      <SelahSubtext style={{ color: subtextColor }}>reflecting...</SelahSubtext>
+    </Animated.View>
+  )
+}
+
 function FadeIn({ children }: { children: ReactNode }) {
   const opacity = useRef(new Animated.Value(0))
 
@@ -171,11 +219,28 @@ export default function PouringScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
+  const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const titleFullText = "What\u2019s on your heart?"
   const title = useTypewriter(titleFullText, 45)
   const titleDuration = titleFullText.length * 45
   const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 200)
+
+  const handleSubmit = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+      setSubmitted(true)
+    }, 3000)
+  }
+
+  if (loading) {
+    return (
+      <LoadingContainer style={{ backgroundColor: theme.background }}>
+        <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
+      </LoadingContainer>
+    )
+  }
 
   if (submitted) {
     return (
@@ -231,10 +296,7 @@ export default function PouringScreen() {
               </InputContainer>
               <Fade visible={text.length > 0}>
                 <SubmitOuter>
-                  <SubmitButton
-                    style={{ backgroundColor: theme.accent }}
-                    onPress={() => setSubmitted(true)}
-                  >
+                  <SubmitButton style={{ backgroundColor: theme.accent }} onPress={handleSubmit}>
                     <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
                   </SubmitButton>
                 </SubmitOuter>
