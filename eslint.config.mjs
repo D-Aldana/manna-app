@@ -29,6 +29,7 @@ export default [
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
+      "react-hooks/refs": "off",
     },
   },
   prettierConfig,

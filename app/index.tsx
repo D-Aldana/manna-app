@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { TextInput, ScrollView } from "react-native"
+import { useState, useEffect, useRef, type ReactNode } from "react"
+import { TextInput, ScrollView, Animated } from "react-native"
 import styled from "@emotion/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
@@ -80,6 +80,20 @@ const BackText = styled.Text({
   fontWeight: "600",
 })
 
+function FadeIn({ children }: { children: ReactNode }) {
+  const opacity = useRef(new Animated.Value(0))
+
+  useEffect(() => {
+    Animated.timing(opacity.current, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start()
+  }, [])
+
+  return <Animated.View style={{ opacity: opacity.current }}>{children}</Animated.View>
+}
+
 export default function PouringScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
@@ -131,14 +145,16 @@ export default function PouringScreen() {
           style={{ color: theme.text, borderColor: theme.border }}
         />
         {showButton && (
-          <SubmitWrapper>
-            <SubmitButton
-              style={{ backgroundColor: theme.accent }}
-              onPress={() => setSubmitted(true)}
-            >
-              <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-            </SubmitButton>
-          </SubmitWrapper>
+          <FadeIn>
+            <SubmitWrapper>
+              <SubmitButton
+                style={{ backgroundColor: theme.accent }}
+                onPress={() => setSubmitted(true)}
+              >
+                <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+              </SubmitButton>
+            </SubmitWrapper>
+          </FadeIn>
         )}
       </InputWrapper>
     </Container>
