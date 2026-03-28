@@ -13,7 +13,7 @@ export const LightTheme = {
 
 export const DarkTheme = {
   background: "#231F1C",
-  backgroundGradient: ["#352E2A", "#1A1614"] as const,
+  backgroundGradient: ["#2A2522", "#1F1B18"] as const,
   surface: "#2E2926",
   text: "#E8E4DF",
   textSecondary: "#A89E95",
