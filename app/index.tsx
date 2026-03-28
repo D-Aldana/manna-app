@@ -114,7 +114,7 @@ function FadeIn({ children }: { children: ReactNode }) {
   useEffect(() => {
     Animated.timing(opacity.current, {
       toValue: 1,
-      duration: 500,
+      duration: 100,
       useNativeDriver: true,
     }).start()
   }, [])
@@ -154,9 +154,10 @@ export default function PouringScreen() {
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
-  const title = useTypewriter("What\u2019s on your heart?", 45)
-  const titleDuration = "What\u2019s on your heart?".length * 45
-  const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 300)
+  const titleFullText = "What\u2019s on your heart?"
+  const title = useTypewriter(titleFullText, 45)
+  const titleDuration = titleFullText.length * 45
+  const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 200)
 
   if (submitted) {
     return (
