@@ -72,12 +72,14 @@ function TabLayout() {
           name="index"
           options={{
             title: "Pouring",
+            tabBarIcon: ({ color, size }) => <Feather name="droplet" size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="history"
           options={{
             title: "History",
+            tabBarIcon: ({ color, size }) => <Feather name="book" size={size} color={color} />,
           }}
         />
       </Tabs>
