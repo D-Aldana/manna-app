@@ -18,9 +18,11 @@ const Container = styled.View({
 })
 
 const Title = styled.Text({
-  fontSize: 32,
+  fontSize: 34,
   fontFamily: "CormorantGaramond_600SemiBold",
   textAlign: "center",
+  letterSpacing: 0.5,
+  lineHeight: 44,
 })
 
 const InputSection = styled.View({
@@ -71,6 +73,7 @@ const SubmitButton = styled.Pressable({
 const SubmitText = styled.Text({
   fontSize: 16,
   fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 1,
 })
 
 const ResponseContainer = styled(ScrollView)({
@@ -79,25 +82,28 @@ const ResponseContainer = styled(ScrollView)({
 })
 
 const Verse = styled.Text({
-  fontSize: 22,
+  fontSize: 24,
   fontFamily: "CormorantGaramond_600SemiBold",
-  lineHeight: 32,
-  marginBottom: 16,
+  lineHeight: 36,
+  letterSpacing: 0.3,
+  marginBottom: 24,
 })
 
 const Commentary = styled.Text({
   fontSize: 16,
   fontFamily: "Nunito_400Regular",
-  lineHeight: 26,
-  marginBottom: 16,
+  lineHeight: 28,
+  letterSpacing: 0.2,
+  marginBottom: 24,
 })
 
 const Prayer = styled.Text({
-  fontSize: 16,
+  fontSize: 18,
   fontFamily: "CormorantGaramond_400Regular",
   fontStyle: "italic",
-  lineHeight: 26,
-  marginBottom: 16,
+  lineHeight: 30,
+  letterSpacing: 0.3,
+  marginBottom: 24,
 })
 
 const BackButton = styled.Pressable({
@@ -111,6 +117,7 @@ const BackButton = styled.Pressable({
 const BackText = styled.Text({
   fontSize: 16,
   fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 0.5,
 })
 
 const LoadingContainer = styled.View({
@@ -120,15 +127,17 @@ const LoadingContainer = styled.View({
 })
 
 const SelahText = styled.Text({
-  fontSize: 40,
+  fontSize: 44,
   fontFamily: "CormorantGaramond_600SemiBold",
   fontStyle: "italic",
+  letterSpacing: 2,
 })
 
 const SelahSubtext = styled.Text({
   fontSize: 14,
   fontFamily: "Nunito_400Regular",
-  marginTop: 8,
+  marginTop: 12,
+  letterSpacing: 2,
 })
 
 const selahPhrases = [
