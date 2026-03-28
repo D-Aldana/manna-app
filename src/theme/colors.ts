@@ -1,6 +1,6 @@
 export const LightTheme = {
   background: "#F5F0E8",
-  backgroundGradient: ["#FFFAF3", "#F0E8DB"] as const,
+  backgroundGradient: ["#FFFCF5", "#E8DFD0"] as const,
   surface: "#FAF7F2",
   text: "#2C2C2C",
   textSecondary: "#6B6B6B",
