@@ -186,28 +186,32 @@ export default function PouringScreen() {
   return (
     <Container style={{ backgroundColor: theme.background }}>
       <Title style={{ color: theme.accent }}>{title.text}</Title>
-      <InputWrapper>
-        <InputContainer style={{ borderColor: theme.border }}>
-          <Input multiline value={text} onChangeText={setText} style={{ color: theme.text }} />
-          {text.length === 0 && placeholder.text.length > 0 && (
-            <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
-              {placeholder.text}
-            </PlaceholderOverlay>
-          )}
-        </InputContainer>
-        {text.length > 0 && (
-          <FadeIn>
-            <SubmitOuter>
-              <SubmitButton
-                style={{ backgroundColor: theme.accent }}
-                onPress={() => setSubmitted(true)}
-              >
-                <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-              </SubmitButton>
-            </SubmitOuter>
-          </FadeIn>
-        )}
-      </InputWrapper>
+      {title.done && (
+        <FadeIn>
+          <InputWrapper>
+            <InputContainer style={{ borderColor: theme.border }}>
+              <Input multiline value={text} onChangeText={setText} style={{ color: theme.text }} />
+              {text.length === 0 && placeholder.text.length > 0 && (
+                <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
+                  {placeholder.text}
+                </PlaceholderOverlay>
+              )}
+            </InputContainer>
+            {text.length > 0 && (
+              <FadeIn>
+                <SubmitOuter>
+                  <SubmitButton
+                    style={{ backgroundColor: theme.accent }}
+                    onPress={() => setSubmitted(true)}
+                  >
+                    <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                  </SubmitButton>
+                </SubmitOuter>
+              </FadeIn>
+            )}
+          </InputWrapper>
+        </FadeIn>
+      )}
     </Container>
   )
 }
