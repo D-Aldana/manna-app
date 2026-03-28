@@ -16,6 +16,7 @@
   "dependencies": {
     "@emotion/native": "^11.11.0",
     "@emotion/react": "^11.14.0",
+    "babel-preset-expo": "^55.0.14-canary-20260328-bdc6273",
     "expo": "55.0.10-canary-20260328-2049187",
     "expo-constants": "55.0.10-canary-20260328-2049187",
     "expo-linking": "55.0.10-canary-20260328-2049187",
