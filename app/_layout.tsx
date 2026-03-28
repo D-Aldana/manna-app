@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
+import styled from "@emotion/native";
 import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,9 +10,9 @@ function ThemeToggle() {
   const insets = useSafeAreaInsets();
 
   return (
-    <Pressable onPress={toggleTheme} style={[styles.toggle, { top: insets.top + 8 }]}>
+    <ToggleButton onPress={toggleTheme} style={{ top: insets.top + 8 }}>
       <Feather name={mode === "light" ? "sun" : "moon"} size={20} color={theme.textSecondary} />
-    </Pressable>
+    </ToggleButton>
   );
 }
 
@@ -54,11 +55,9 @@ export default function RootLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  toggle: {
-    position: "absolute",
-    right: 16,
-    zIndex: 10,
-    padding: 8,
-  },
+const ToggleButton = styled(Pressable)({
+  position: "absolute",
+  right: 16,
+  zIndex: 10,
+  padding: 8,
 });
