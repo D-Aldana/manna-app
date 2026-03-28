@@ -9,6 +9,7 @@ const Container = styled.View({
   justifyContent: "center",
   alignItems: "center",
   paddingHorizontal: 24,
+  paddingBottom: 48,
 })
 
 const Title = styled.Text({
@@ -113,7 +114,7 @@ function FadeIn({ children }: { children: ReactNode }) {
   useEffect(() => {
     Animated.timing(opacity.current, {
       toValue: 1,
-      duration: 200,
+      duration: 500,
       useNativeDriver: true,
     }).start()
   }, [])
@@ -201,10 +202,10 @@ export default function PouringScreen() {
                   multiline
                   value={text}
                   onChangeText={setText}
-                  style={{ color: theme.text }}
+                  style={{ color: theme.accent }}
                 />
                 {text.length === 0 && placeholder.text.length > 0 && (
-                  <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
+                  <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
                     {placeholder.text}
                   </PlaceholderOverlay>
                 )}
