@@ -1,4 +1,4 @@
-import { Pressable } from "react-native"
+import { Pressable, View } from "react-native"
 import styled from "@emotion/native"
 import { Tabs } from "expo-router"
 import { Feather } from "@expo/vector-icons"
@@ -34,7 +34,7 @@ function TabLayout() {
   const insets = useSafeAreaInsets()
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <ThemeToggle />
       <Tabs
         screenOptions={{
@@ -76,7 +76,7 @@ function TabLayout() {
           }}
         />
       </Tabs>
-    </>
+    </View>
   )
 }
 
