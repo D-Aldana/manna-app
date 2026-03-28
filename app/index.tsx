@@ -6,15 +6,19 @@ import { useTheme } from "@/theme/ThemeContext"
 
 const Container = styled.View({
   flex: 1,
+  justifyContent: "center",
   paddingHorizontal: 24,
 })
 
 const Input = styled(TextInput)({
-  flex: 1,
   fontSize: 18,
   lineHeight: 28,
   textAlignVertical: "top",
-  paddingTop: 16,
+  padding: 16,
+  borderWidth: 1,
+  borderRadius: 12,
+  minHeight: 120,
+  maxHeight: 240,
 })
 
 const SubmitButton = styled.Pressable({
@@ -22,7 +26,7 @@ const SubmitButton = styled.Pressable({
   paddingVertical: 14,
   paddingHorizontal: 32,
   borderRadius: 12,
-  marginBottom: 16,
+  marginTop: 16,
 })
 
 const SubmitText = styled.Text({
@@ -107,14 +111,14 @@ export default function PouringScreen() {
   }
 
   return (
-    <Container style={{ backgroundColor: theme.background, paddingTop: insets.top + 48 }}>
+    <Container style={{ backgroundColor: theme.background }}>
       <Input
         placeholder="What's on your heart..."
         placeholderTextColor={theme.textSecondary}
         multiline
         value={text}
         onChangeText={setText}
-        style={{ color: theme.text }}
+        style={{ color: theme.text, borderColor: theme.border }}
       />
       {text.length > 0 && (
         <SubmitButton style={{ backgroundColor: theme.accent }} onPress={() => setSubmitted(true)}>
