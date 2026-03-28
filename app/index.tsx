@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from "react"
-import { TextInput, ScrollView, Animated } from "react-native"
+import { TextInput, ScrollView, Animated, View } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -357,46 +357,48 @@ export default function PouringScreen() {
   }
 
   return (
-    <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
-      <GradientBg colors={theme.backgroundGradient}>
-        <Container>
-          <Title style={{ color: theme.accent }}>{title.text}</Title>
-          {title.done && (
-            <InputSection style={{ top: "55%" }}>
-              <FadeIn>
-                <InputWrapper>
-                  <InputContainer style={{ borderColor: theme.border }}>
-                    <Input
-                      multiline
-                      submitBehavior="submit"
-                      returnKeyType="send"
-                      onSubmitEditing={() => text.length > 0 && handleSubmit()}
-                      value={text}
-                      onChangeText={setText}
-                      style={{ color: theme.accent }}
-                    />
-                    {text.length === 0 && placeholder.text.length > 0 && (
-                      <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
-                        {placeholder.text}
-                      </PlaceholderOverlay>
-                    )}
-                  </InputContainer>
-                  <Fade visible={text.length > 0}>
-                    <SubmitOuter>
-                      <SubmitButton
-                        style={{ backgroundColor: theme.accent }}
-                        onPress={handleSubmit}
-                      >
-                        <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                      </SubmitButton>
-                    </SubmitOuter>
-                  </Fade>
-                </InputWrapper>
-              </FadeIn>
-            </InputSection>
-          )}
-        </Container>
-      </GradientBg>
-    </Animated.View>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
+        <GradientBg colors={theme.backgroundGradient}>
+          <Container>
+            <Title style={{ color: theme.accent }}>{title.text}</Title>
+            {title.done && (
+              <InputSection style={{ top: "55%" }}>
+                <FadeIn>
+                  <InputWrapper>
+                    <InputContainer style={{ borderColor: theme.border }}>
+                      <Input
+                        multiline
+                        submitBehavior="submit"
+                        returnKeyType="send"
+                        onSubmitEditing={() => text.length > 0 && handleSubmit()}
+                        value={text}
+                        onChangeText={setText}
+                        style={{ color: theme.accent }}
+                      />
+                      {text.length === 0 && placeholder.text.length > 0 && (
+                        <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
+                          {placeholder.text}
+                        </PlaceholderOverlay>
+                      )}
+                    </InputContainer>
+                    <Fade visible={text.length > 0}>
+                      <SubmitOuter>
+                        <SubmitButton
+                          style={{ backgroundColor: theme.accent }}
+                          onPress={handleSubmit}
+                        >
+                          <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                        </SubmitButton>
+                      </SubmitOuter>
+                    </Fade>
+                  </InputWrapper>
+                </FadeIn>
+              </InputSection>
+            )}
+          </Container>
+        </GradientBg>
+      </Animated.View>
+    </View>
   )
 }
