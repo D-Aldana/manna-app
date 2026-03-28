@@ -143,7 +143,7 @@ export default function PouringScreen() {
 
   return (
     <Container style={{ backgroundColor: theme.background }}>
-      <Title style={{ color: theme.text }}>What&apos;s on your heart?</Title>
+      <Title style={{ color: theme.accent }}>What&apos;s on your heart?</Title>
       <InputWrapper>
         <Input
           placeholder="Let it out..."
