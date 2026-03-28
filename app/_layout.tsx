@@ -1,23 +1,23 @@
-import { Pressable } from "react-native";
-import styled from "@emotion/native";
-import { Tabs } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ThemeProvider, useTheme } from "../src/theme/ThemeContext";
+import { Pressable } from "react-native"
+import styled from "@emotion/native"
+import { Tabs } from "expo-router"
+import { Feather } from "@expo/vector-icons"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { ThemeProvider, useTheme } from "../src/theme/ThemeContext"
 
 function ThemeToggle() {
-  const { theme, mode, toggleTheme } = useTheme();
-  const insets = useSafeAreaInsets();
+  const { theme, mode, toggleTheme } = useTheme()
+  const insets = useSafeAreaInsets()
 
   return (
     <ToggleButton onPress={toggleTheme} style={{ top: insets.top + 8 }}>
       <Feather name={mode === "light" ? "sun" : "moon"} size={20} color={theme.textSecondary} />
     </ToggleButton>
-  );
+  )
 }
 
 function TabLayout() {
-  const { theme } = useTheme();
+  const { theme } = useTheme()
 
   return (
     <>
@@ -44,7 +44,7 @@ function TabLayout() {
         />
       </Tabs>
     </>
-  );
+  )
 }
 
 export default function RootLayout() {
@@ -52,7 +52,7 @@ export default function RootLayout() {
     <ThemeProvider>
       <TabLayout />
     </ThemeProvider>
-  );
+  )
 }
 
 const ToggleButton = styled(Pressable)({
@@ -60,4 +60,4 @@ const ToggleButton = styled(Pressable)({
   right: 16,
   zIndex: 10,
   padding: 8,
-});
+})

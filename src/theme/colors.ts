@@ -8,7 +8,7 @@ export const LightTheme = {
   tabBar: "#FFFFFF",
   tabBarInactive: "#B0A89E",
   tabBarActive: "#B8977E",
-};
+}
 
 export const DarkTheme = {
   background: "#1A1B2E",
@@ -20,6 +20,6 @@ export const DarkTheme = {
   tabBar: "#1A1B2E",
   tabBarInactive: "#6B6B8A",
   tabBarActive: "#D4A66A",
-};
+}
 
-export type Theme = typeof LightTheme;
+export type Theme = typeof LightTheme
