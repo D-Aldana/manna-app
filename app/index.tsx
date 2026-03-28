@@ -7,6 +7,7 @@ import { useTheme } from "@/theme/ThemeContext"
 const Container = styled.View({
   flex: 1,
   justifyContent: "center",
+  alignItems: "center",
   paddingHorizontal: 24,
 })
 
@@ -14,7 +15,12 @@ const Title = styled.Text({
   fontSize: 32,
   fontFamily: "CormorantGaramond_600SemiBold",
   textAlign: "center",
-  marginBottom: 24,
+})
+
+const InputSection = styled.View({
+  position: "absolute",
+  left: 24,
+  right: 24,
 })
 
 const InputWrapper = styled.View({})
@@ -187,30 +193,37 @@ export default function PouringScreen() {
     <Container style={{ backgroundColor: theme.background }}>
       <Title style={{ color: theme.accent }}>{title.text}</Title>
       {title.done && (
-        <FadeIn>
-          <InputWrapper>
-            <InputContainer style={{ borderColor: theme.border }}>
-              <Input multiline value={text} onChangeText={setText} style={{ color: theme.text }} />
-              {text.length === 0 && placeholder.text.length > 0 && (
-                <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
-                  {placeholder.text}
-                </PlaceholderOverlay>
+        <InputSection style={{ top: "55%" }}>
+          <FadeIn>
+            <InputWrapper>
+              <InputContainer style={{ borderColor: theme.border }}>
+                <Input
+                  multiline
+                  value={text}
+                  onChangeText={setText}
+                  style={{ color: theme.text }}
+                />
+                {text.length === 0 && placeholder.text.length > 0 && (
+                  <PlaceholderOverlay style={{ color: theme.textSecondary }} pointerEvents="none">
+                    {placeholder.text}
+                  </PlaceholderOverlay>
+                )}
+              </InputContainer>
+              {text.length > 0 && (
+                <FadeIn>
+                  <SubmitOuter>
+                    <SubmitButton
+                      style={{ backgroundColor: theme.accent }}
+                      onPress={() => setSubmitted(true)}
+                    >
+                      <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                    </SubmitButton>
+                  </SubmitOuter>
+                </FadeIn>
               )}
-            </InputContainer>
-            {text.length > 0 && (
-              <FadeIn>
-                <SubmitOuter>
-                  <SubmitButton
-                    style={{ backgroundColor: theme.accent }}
-                    onPress={() => setSubmitted(true)}
-                  >
-                    <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                  </SubmitButton>
-                </SubmitOuter>
-              </FadeIn>
-            )}
-          </InputWrapper>
-        </FadeIn>
+            </InputWrapper>
+          </FadeIn>
+        </InputSection>
       )}
     </Container>
   )
