@@ -103,26 +103,31 @@ function FadeIn({ children }: { children: ReactNode }) {
   return <Animated.View style={{ opacity: opacity.current }}>{children}</Animated.View>
 }
 
-function useTypewriter(fullText: string, speed = 60) {
+function useTypewriter(fullText: string, speed = 60, delay = 0) {
   const [displayed, setDisplayed] = useState("")
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
     if (speed <= 0) {
       setDisplayed(fullText)
+      setDone(true)
       return
     }
-    let i = 0
-    const interval = setInterval(() => {
-      i++
-      setDisplayed(fullText.slice(0, i))
-      if (i >= fullText.length) {
-        clearInterval(interval)
-      }
-    }, speed)
-    return () => clearInterval(interval)
-  }, [fullText, speed])
+    const timeout = setTimeout(() => {
+      let i = 0
+      const interval = setInterval(() => {
+        i++
+        setDisplayed(fullText.slice(0, i))
+        if (i >= fullText.length) {
+          clearInterval(interval)
+          setDone(true)
+        }
+      }, speed)
+    }, delay)
+    return () => clearTimeout(timeout)
+  }, [fullText, speed, delay])
 
-  return displayed
+  return { text: displayed, done }
 }
 
 export default function PouringScreen() {
@@ -130,7 +135,9 @@ export default function PouringScreen() {
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
-  const titleText = useTypewriter("What\u2019s on your heart?", 60)
+  const title = useTypewriter("What\u2019s on your heart?", 45)
+  const titleDuration = "What\u2019s on your heart?".length * 45
+  const placeholder = useTypewriter("Let it out...", 45, titleDuration + 300)
 
   if (submitted) {
     return (
@@ -166,10 +173,10 @@ export default function PouringScreen() {
 
   return (
     <Container style={{ backgroundColor: theme.background }}>
-      <Title style={{ color: theme.accent }}>{titleText}</Title>
+      <Title style={{ color: theme.accent }}>{title.text}</Title>
       <InputWrapper>
         <Input
-          placeholder="Let it out..."
+          placeholder={placeholder.text}
           placeholderTextColor={theme.textSecondary}
           multiline
           value={text}
