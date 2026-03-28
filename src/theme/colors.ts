@@ -5,9 +5,9 @@ export const LightTheme = {
   textSecondary: "#6B6B6B",
   accent: "#B8977E",
   border: "#E8E2DA",
-  tabBar: "#FFFFFF",
+  tabBar: "#EDE8DF",
   tabBarInactive: "#B0A89E",
-  tabBarActive: "#B8977E",
+  tabBarActive: "#8C7561",
 }
 
 export const DarkTheme = {
@@ -17,7 +17,7 @@ export const DarkTheme = {
   textSecondary: "#A89E95",
   accent: "#D4A66A",
   border: "#3A3330",
-  tabBar: "#231F1C",
+  tabBar: "#1C1916",
   tabBarInactive: "#7A706A",
   tabBarActive: "#D4A66A",
 }
