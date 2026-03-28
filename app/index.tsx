@@ -226,18 +226,29 @@ export default function PouringScreen() {
   const titleDuration = titleFullText.length * 45
   const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 200)
 
+  const screenOpacity = useRef(new Animated.Value(1))
+
   const handleSubmit = () => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setSubmitted(true)
-    }, 3000)
+    Animated.timing(screenOpacity.current, {
+      toValue: 0,
+      duration: 400,
+      useNativeDriver: true,
+    }).start(() => {
+      setLoading(true)
+      screenOpacity.current.setValue(1)
+      setTimeout(() => {
+        setLoading(false)
+        setSubmitted(true)
+      }, 3000)
+    })
   }
 
   if (loading) {
     return (
       <LoadingContainer style={{ backgroundColor: theme.background }}>
-        <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
+        <FadeIn>
+          <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
+        </FadeIn>
       </LoadingContainer>
     )
   }
@@ -275,36 +286,38 @@ export default function PouringScreen() {
   }
 
   return (
-    <Container style={{ backgroundColor: theme.background }}>
-      <Title style={{ color: theme.accent }}>{title.text}</Title>
-      {title.done && (
-        <InputSection style={{ top: "55%" }}>
-          <FadeIn>
-            <InputWrapper>
-              <InputContainer style={{ borderColor: theme.border }}>
-                <Input
-                  multiline
-                  value={text}
-                  onChangeText={setText}
-                  style={{ color: theme.accent }}
-                />
-                {text.length === 0 && placeholder.text.length > 0 && (
-                  <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
-                    {placeholder.text}
-                  </PlaceholderOverlay>
-                )}
-              </InputContainer>
-              <Fade visible={text.length > 0}>
-                <SubmitOuter>
-                  <SubmitButton style={{ backgroundColor: theme.accent }} onPress={handleSubmit}>
-                    <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                  </SubmitButton>
-                </SubmitOuter>
-              </Fade>
-            </InputWrapper>
-          </FadeIn>
-        </InputSection>
-      )}
-    </Container>
+    <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
+      <Container style={{ backgroundColor: theme.background }}>
+        <Title style={{ color: theme.accent }}>{title.text}</Title>
+        {title.done && (
+          <InputSection style={{ top: "55%" }}>
+            <FadeIn>
+              <InputWrapper>
+                <InputContainer style={{ borderColor: theme.border }}>
+                  <Input
+                    multiline
+                    value={text}
+                    onChangeText={setText}
+                    style={{ color: theme.accent }}
+                  />
+                  {text.length === 0 && placeholder.text.length > 0 && (
+                    <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
+                      {placeholder.text}
+                    </PlaceholderOverlay>
+                  )}
+                </InputContainer>
+                <Fade visible={text.length > 0}>
+                  <SubmitOuter>
+                    <SubmitButton style={{ backgroundColor: theme.accent }} onPress={handleSubmit}>
+                      <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                    </SubmitButton>
+                  </SubmitOuter>
+                </Fade>
+              </InputWrapper>
+            </FadeIn>
+          </InputSection>
+        )}
+      </Container>
+    </Animated.View>
   )
 }
