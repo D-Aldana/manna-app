@@ -1,4 +1,4 @@
-import { Pressable, View, useWindowDimensions } from "react-native"
+import { Pressable, View } from "react-native"
 import styled from "@emotion/native"
 import { Tabs } from "expo-router"
 import { Feather } from "@expo/vector-icons"
@@ -32,9 +32,7 @@ function ThemeToggle() {
 function TabLayout() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
-  const { width } = useWindowDimensions()
   const pillWidth = 120
-  const pillLeft = (width - pillWidth) / 2
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -45,8 +43,9 @@ function TabLayout() {
           tabBarStyle: {
             position: "absolute",
             bottom: insets.bottom + 12,
-            left: pillLeft,
-            right: pillLeft,
+            left: "50%",
+            transform: [{ translateX: -pillWidth / 2 }],
+            width: pillWidth,
             backgroundColor: theme.tabBar,
             borderRadius: 24,
             height: 48,
