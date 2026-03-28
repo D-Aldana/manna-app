@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { TextInput, ScrollView } from "react-native"
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import styled from "@emotion/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
@@ -13,20 +14,22 @@ const Container = styled.View({
 const Input = styled(TextInput)({
   fontSize: 18,
   lineHeight: 28,
-  textAlignVertical: "top",
+  textAlignVertical: "center",
   padding: 16,
   borderWidth: 1,
-  borderRadius: 12,
-  minHeight: 120,
-  maxHeight: 240,
+  borderRadius: 24,
+  minHeight: 65,
+})
+
+const SubmitWrapper = styled(Animated.View)({
+  alignSelf: "center",
+  marginTop: 16,
 })
 
 const SubmitButton = styled.Pressable({
-  alignSelf: "center",
   paddingVertical: 14,
   paddingHorizontal: 32,
-  borderRadius: 12,
-  marginTop: 16,
+  borderRadius: 24,
 })
 
 const SubmitText = styled.Text({
@@ -63,7 +66,7 @@ const BackButton = styled.Pressable({
   alignSelf: "center",
   paddingVertical: 14,
   paddingHorizontal: 32,
-  borderRadius: 12,
+  borderRadius: 24,
   marginBottom: 16,
 })
 
@@ -77,6 +80,7 @@ export default function PouringScreen() {
   const insets = useSafeAreaInsets()
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const showButton = text.length > 0
 
   if (submitted) {
     return (
@@ -120,10 +124,15 @@ export default function PouringScreen() {
         onChangeText={setText}
         style={{ color: theme.text, borderColor: theme.border }}
       />
-      {text.length > 0 && (
-        <SubmitButton style={{ backgroundColor: theme.accent }} onPress={() => setSubmitted(true)}>
-          <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-        </SubmitButton>
+      {showButton && (
+        <SubmitWrapper entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
+          <SubmitButton
+            style={{ backgroundColor: theme.accent }}
+            onPress={() => setSubmitted(true)}
+          >
+            <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+          </SubmitButton>
+        </SubmitWrapper>
       )}
     </Container>
   )
