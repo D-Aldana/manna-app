@@ -45,8 +45,8 @@
 
 - **Minimalism:** Clean typography, maximum whitespace, and zero "social media" features.
 - **User-Selected Themes:**
-  - **Light/Morning:** Soft whites, creams, and airy pastels.
-  - **Dark/Sanctuary:** Deep charcoals, midnight blues, and warm amber accents.
+  - **Light/Morning:** Warm off-white creams with soft brown accents.
+  - **Dark/Sanctuary:** Warm brownish charcoals with amber accents.
 - **User-Initiated Only:** **Zero push notifications.** The app is a destination, not a distraction.
 
 ---
