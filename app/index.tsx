@@ -19,6 +19,13 @@ const MenuButton = styled(Pressable)({
   padding: 8,
 })
 
+const ThemeToggleButton = styled(Pressable)({
+  position: "absolute",
+  right: 16,
+  zIndex: 10,
+  padding: 8,
+})
+
 const Container = styled.View({
   flex: 1,
   justifyContent: "center",
@@ -290,7 +297,7 @@ function useTypewriter(fullText: string, speed = 60, delay = 0) {
 }
 
 export default function PouringScreen() {
-  const { theme } = useTheme()
+  const { theme, mode, toggleTheme } = useTheme()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const [text, setText] = useState("")
@@ -375,6 +382,9 @@ export default function PouringScreen() {
       >
         <Feather name="menu" size={20} color={theme.textSecondary} />
       </MenuButton>
+      <ThemeToggleButton onPress={toggleTheme} style={{ top: insets.top + 8 }}>
+        <Feather name={mode === "light" ? "sun" : "moon"} size={20} color={theme.textSecondary} />
+      </ThemeToggleButton>
       <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
         <GradientBg colors={theme.backgroundGradient}>
           <Container>
