@@ -76,7 +76,7 @@ const SubmitOuter = styled.View({
 
 const SubmitButton = styled.Pressable({
   paddingVertical: 14,
-  paddingHorizontal: 32,
+  paddingHorizontal: 42,
   borderRadius: 24,
 })
 
