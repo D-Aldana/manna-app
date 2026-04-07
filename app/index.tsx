@@ -7,6 +7,8 @@ import { useNavigation } from "expo-router"
 import { DrawerActions } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
+import { reflect } from "@/lib/reflect"
+import { createEntry, updateEntry } from "@/lib/entries"
 
 const GradientBg = styled(LinearGradient)({
   flex: 1,
@@ -303,6 +305,12 @@ export default function PouringScreen() {
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [response, setResponse] = useState<{
+    verse_text: string
+    verse_ref: string
+    commentary: string
+    prayer: string
+  } | null>(null)
   const titleFullText = "What\u2019s on your heart?"
   const title = useTypewriter(titleFullText, 45)
   const titleDuration = titleFullText.length * 45
@@ -315,13 +323,20 @@ export default function PouringScreen() {
       toValue: 0,
       duration: 400,
       useNativeDriver: true,
-    }).start(() => {
+    }).start(async () => {
       setLoading(true)
       screenOpacity.current.setValue(1)
-      setTimeout(() => {
-        setLoading(false)
-        setSubmitted(true)
-      }, 3000)
+      try {
+        const entry = await createEntry(text)
+        const result = await reflect(text)
+        await updateEntry(entry.id, result)
+        setResponse(result)
+      } catch (err) {
+        console.error("Reflect failed:", err)
+        setResponse(null)
+      }
+      setLoading(false)
+      setSubmitted(true)
     })
   }
 
@@ -337,32 +352,23 @@ export default function PouringScreen() {
     )
   }
 
-  if (submitted) {
+  if (submitted && response) {
     return (
       <GradientBg colors={theme.backgroundGradient}>
         <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
           <ResponseContainer>
             <VerseContainer>
               <QuoteMark style={{ color: theme.accent }}>&ldquo;</QuoteMark>
-              <VerseText style={{ color: theme.text }}>
-                Come to me, all you who are weary and burdened, and I will give you rest.
-              </VerseText>
-              <VerseRef style={{ color: theme.textSecondary }}>— Matthew 11:28 (NIV)</VerseRef>
+              <VerseText style={{ color: theme.text }}>{response.verse_text}</VerseText>
+              <VerseRef style={{ color: theme.textSecondary }}>— {response.verse_ref}</VerseRef>
             </VerseContainer>
-            <Commentary style={{ color: theme.textSecondary }}>
-              Jesus speaks these words as an invitation to anyone carrying the weight of life&apos;s
-              struggles. He doesn&apos;t ask you to have it all figured out first — He simply asks
-              you to come. The rest He offers isn&apos;t just physical; it&apos;s a deep, soul-level
-              peace that comes from trusting Him with your burdens.
-            </Commentary>
-            <Prayer style={{ color: theme.accent }}>
-              Lord, I bring my weariness to You. Help me to lay down what I&apos;ve been carrying
-              and find true rest in Your presence. Amen.
-            </Prayer>
+            <Commentary style={{ color: theme.textSecondary }}>{response.commentary}</Commentary>
+            <Prayer style={{ color: theme.accent }}>{response.prayer}</Prayer>
             <BackButton
               style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
               onPress={() => {
                 setSubmitted(false)
+                setResponse(null)
                 setText("")
               }}
             >
