@@ -19,6 +19,7 @@
     "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/nunito": "^0.4.2",
     "@react-navigation/drawer": "^7.9.8",
+    "@supabase/supabase-js": "^2.101.1",
     "babel-preset-expo": "^55.0.14-canary-20260328-bdc6273",
     "expo": "55.0.10-canary-20260328-2049187",
     "expo-constants": "55.0.10-canary-20260328-2049187",
