@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { ScrollView, Pressable, Alert } from "react-native"
+import { useState, useEffect, useRef } from "react"
+import { ScrollView, Pressable, Modal, Animated } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
@@ -102,12 +102,58 @@ const LoadingText = styled.Text({
   fontFamily: "CormorantGaramond_600SemiBold",
 })
 
+const Overlay = styled.Pressable({
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+})
+
+const ModalCard = styled(Animated.View)({
+  width: "80%",
+  borderRadius: 24,
+  padding: 32,
+  alignItems: "center",
+})
+
+const ModalTitle = styled.Text({
+  fontSize: 22,
+  fontFamily: "CormorantGaramond_600SemiBold",
+  marginBottom: 12,
+  textAlign: "center",
+})
+
+const ModalBody = styled.Text({
+  fontSize: 15,
+  fontFamily: "Nunito_400Regular",
+  lineHeight: 22,
+  textAlign: "center",
+  marginBottom: 28,
+})
+
+const ModalButton = styled.Pressable({
+  width: "100%",
+  paddingVertical: 14,
+  borderRadius: 24,
+  alignItems: "center",
+  marginBottom: 12,
+})
+
+const ModalButtonText = styled.Text({
+  fontSize: 16,
+  fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 0.5,
+})
+
 export default function ReflectionScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
   const [entry, setEntry] = useState<Entry | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const modalScale = useRef(new Animated.Value(0.9))
+  const modalOpacity = useRef(new Animated.Value(0))
 
   useEffect(() => {
     if (id) {
@@ -115,19 +161,32 @@ export default function ReflectionScreen() {
     }
   }, [id])
 
-  const handleDelete = () => {
-    Alert.alert("Delete Reflection", "Are you sure you want to delete this reflection?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          if (!id) return
-          await deleteEntry(id)
-          router.back()
-        },
-      },
-    ])
+  useEffect(() => {
+    if (confirmDelete) {
+      Animated.parallel([
+        Animated.spring(modalScale.current, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 65,
+          friction: 8,
+        }),
+        Animated.timing(modalOpacity.current, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    } else {
+      modalScale.current.setValue(0.9)
+      modalOpacity.current.setValue(0)
+    }
+  }, [confirmDelete])
+
+  const handleDelete = async () => {
+    if (!id) return
+    await deleteEntry(id)
+    setConfirmDelete(false)
+    router.back()
   }
 
   if (!entry) {
@@ -156,12 +215,42 @@ export default function ReflectionScreen() {
           <Prayer style={{ color: theme.accent }}>{entry.prayer}</Prayer>
           <ActionButton
             style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
-            onPress={handleDelete}
+            onPress={() => setConfirmDelete(true)}
           >
             <ActionText style={{ color: "#c44" }}>Delete</ActionText>
           </ActionButton>
         </ResponseContainer>
       </Container>
+
+      <Modal visible={confirmDelete} transparent animationType="none">
+        <Overlay onPress={() => setConfirmDelete(false)}>
+          <ModalCard
+            style={{
+              backgroundColor: theme.surface,
+              transform: [{ scale: modalScale.current }],
+              opacity: modalOpacity.current,
+            }}
+          >
+            <ModalTitle style={{ color: theme.text }}>Let go of this reflection?</ModalTitle>
+            <ModalBody style={{ color: theme.textSecondary }}>
+              This will permanently remove it from your history.
+            </ModalBody>
+            <ModalButton style={{ backgroundColor: "#c44" }} onPress={handleDelete}>
+              <ModalButtonText style={{ color: "#fff" }}>Delete</ModalButtonText>
+            </ModalButton>
+            <ModalButton
+              style={{
+                backgroundColor: theme.background,
+                borderColor: theme.border,
+                borderWidth: 1,
+              }}
+              onPress={() => setConfirmDelete(false)}
+            >
+              <ModalButtonText style={{ color: theme.text }}>Keep</ModalButtonText>
+            </ModalButton>
+          </ModalCard>
+        </Overlay>
+      </Modal>
     </GradientBg>
   )
 }
