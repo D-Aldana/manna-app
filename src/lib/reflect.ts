@@ -8,10 +8,14 @@ type ReflectResponse = {
 }
 
 export async function reflect(input: string): Promise<ReflectResponse> {
-  const { data, error } = await supabase.functions.invoke("reflect", {
+  const { data, error } = await supabase.functions.invoke<ReflectResponse>("reflect", {
     body: { input },
   })
 
-  if (error) throw error
-  return data as ReflectResponse
+  if (error) {
+    const detail = (data as Record<string, string>)?.error ?? error.message
+    throw new Error(detail || "Edge function error")
+  }
+  if (!data) throw new Error("No response from reflect function")
+  return data
 }
