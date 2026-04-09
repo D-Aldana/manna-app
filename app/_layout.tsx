@@ -47,6 +47,12 @@ function DrawerLayout() {
           drawerIcon: ({ color, size }) => <Feather name="book" size={size} color={color} />,
         }}
       />
+      <Drawer.Screen
+        name="reflection/[id]"
+        options={{
+          drawerItemStyle: { display: "none" },
+        }}
+      />
     </Drawer>
   )
 }

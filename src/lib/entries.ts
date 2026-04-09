@@ -48,3 +48,9 @@ export async function getEntry(id: string) {
   if (error) throw error
   return data as Entry
 }
+
+export async function deleteEntry(id: string) {
+  const { error } = await supabase.from("entries").delete().eq("id", id)
+
+  if (error) throw error
+}

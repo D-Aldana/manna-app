@@ -3,7 +3,7 @@ import { FlatList, Pressable } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
-import { useNavigation } from "expo-router"
+import { useNavigation, useRouter } from "expo-router"
 import { DrawerActions } from "@react-navigation/native"
 import { useFocusEffect } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -83,20 +83,6 @@ const EmptySubtext = styled.Text({
   marginTop: 8,
 })
 
-const ExpandedCommentary = styled.Text({
-  fontSize: 15,
-  fontFamily: "Nunito_400Regular",
-  lineHeight: 24,
-  marginBottom: 12,
-})
-
-const ExpandedPrayer = styled.Text({
-  fontSize: 16,
-  fontFamily: "CormorantGaramond_400Regular",
-  fontStyle: "italic",
-  lineHeight: 26,
-})
-
 function formatDate(iso: string) {
   const d = new Date(iso)
   return d.toLocaleDateString("en-US", {
@@ -110,9 +96,9 @@ export default function HistoryScreen() {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
+  const router = useRouter()
   const [entries, setEntries] = useState<Entry[]>([])
   const [loading, setLoading] = useState(true)
-  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   useFocusEffect(
     useCallback(() => {
@@ -123,36 +109,21 @@ export default function HistoryScreen() {
     }, []),
   )
 
-  const renderEntry = ({ item }: { item: Entry }) => {
-    const expanded = expandedId === item.id
-
-    return (
-      <Card
-        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
-        onPress={() => setExpandedId(expanded ? null : item.id)}
-      >
-        <VerseText style={{ color: theme.text }}>&ldquo;{item.verse_text}&rdquo;</VerseText>
-        <VerseRef style={{ color: theme.textSecondary }}>— {item.verse_ref}</VerseRef>
-        {expanded && (
-          <>
-            <ExpandedCommentary style={{ color: theme.textSecondary }}>
-              {item.commentary}
-            </ExpandedCommentary>
-            <ExpandedPrayer style={{ color: theme.accent }}>{item.prayer}</ExpandedPrayer>
-          </>
-        )}
-        <InputPreview
-          style={{ color: theme.textSecondary, opacity: 0.7 }}
-          numberOfLines={expanded ? undefined : 1}
-        >
-          {item.input}
-        </InputPreview>
-        <DateText style={{ color: theme.textSecondary, opacity: 0.5 }}>
-          {formatDate(item.created_at)}
-        </DateText>
-      </Card>
-    )
-  }
+  const renderEntry = ({ item }: { item: Entry }) => (
+    <Card
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
+      onPress={() => router.push(`/reflection/${item.id}`)}
+    >
+      <VerseText style={{ color: theme.text }}>&ldquo;{item.verse_text}&rdquo;</VerseText>
+      <VerseRef style={{ color: theme.textSecondary }}>— {item.verse_ref}</VerseRef>
+      <InputPreview style={{ color: theme.textSecondary, opacity: 0.7 }} numberOfLines={1}>
+        {item.input}
+      </InputPreview>
+      <DateText style={{ color: theme.textSecondary, opacity: 0.5 }}>
+        {formatDate(item.created_at)}
+      </DateText>
+    </Card>
+  )
 
   return (
     <GradientBg colors={theme.backgroundGradient}>
