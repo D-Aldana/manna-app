@@ -41,16 +41,10 @@ function DrawerLayout() {
         }}
       />
       <Drawer.Screen
-        name="history"
+        name="(history)"
         options={{
           title: "Past Reflections",
           drawerIcon: ({ color, size }) => <Feather name="book" size={size} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="reflection/[id]"
-        options={{
-          drawerItemStyle: { display: "none" },
         }}
       />
     </Drawer>
