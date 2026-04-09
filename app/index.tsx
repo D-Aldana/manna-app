@@ -311,6 +311,7 @@ export default function PouringScreen() {
     commentary: string
     prayer: string
   } | null>(null)
+  const [error, setError] = useState("")
   const titleFullText = "What\u2019s on your heart?"
   const title = useTypewriter(titleFullText, 45)
   const titleDuration = titleFullText.length * 45
@@ -326,13 +327,16 @@ export default function PouringScreen() {
     }).start(async () => {
       setLoading(true)
       screenOpacity.current.setValue(1)
+      setError("")
       try {
         const entry = await createEntry(text)
         const result = await reflect(text)
         await updateEntry(entry.id, result)
         setResponse(result)
-      } catch (err) {
-        console.error("Reflect failed:", err)
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : JSON.stringify(err)
+        console.error("Reflect failed:", message)
+        setError(message)
         setResponse(null)
       }
       setLoading(false)
@@ -348,6 +352,37 @@ export default function PouringScreen() {
             <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
           </FadeIn>
         </LoadingContainer>
+      </GradientBg>
+    )
+  }
+
+  if (submitted && error) {
+    return (
+      <GradientBg colors={theme.backgroundGradient}>
+        <Container style={{ paddingTop: insets.top + 48 }}>
+          <Commentary style={{ color: theme.textSecondary, textAlign: "center" }}>
+            Something went wrong. Please try again.
+          </Commentary>
+          <Commentary
+            style={{ color: theme.textSecondary, fontSize: 12, opacity: 0.6, textAlign: "center" }}
+          >
+            {error}
+          </Commentary>
+          <BackButton
+            style={{
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              borderWidth: 1,
+              marginTop: 24,
+            }}
+            onPress={() => {
+              setSubmitted(false)
+              setError("")
+            }}
+          >
+            <BackText style={{ color: theme.text }}>Try Again</BackText>
+          </BackButton>
+        </Container>
       </GradientBg>
     )
   }
