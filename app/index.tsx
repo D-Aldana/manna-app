@@ -6,9 +6,20 @@ import { Feather } from "@expo/vector-icons"
 import { useNavigation } from "expo-router"
 import { DrawerActions } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useTheme } from "@/theme/ThemeContext"
 import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
+
+const STORAGE_KEY = "manna_current_reflection"
+
+type ReflectionData = {
+  input: string
+  verse_text: string
+  verse_ref: string
+  commentary: string
+  prayer: string
+}
 
 const GradientBg = styled(LinearGradient)({
   flex: 1,
@@ -305,19 +316,28 @@ export default function PouringScreen() {
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [response, setResponse] = useState<{
-    verse_text: string
-    verse_ref: string
-    commentary: string
-    prayer: string
-  } | null>(null)
+  const [response, setResponse] = useState<ReflectionData | null>(null)
+  const [saved, setSaved] = useState(false)
   const [error, setError] = useState("")
+  const [restoring, setRestoring] = useState(true)
   const titleFullText = "What\u2019s on your heart?"
   const title = useTypewriter(titleFullText, 45)
   const titleDuration = titleFullText.length * 45
   const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 200)
 
   const screenOpacity = useRef(new Animated.Value(1))
+
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
+      if (stored) {
+        const data = JSON.parse(stored) as ReflectionData
+        setResponse(data)
+        setText(data.input)
+        setSubmitted(true)
+      }
+      setRestoring(false)
+    })
+  }, [])
 
   const handleSubmit = () => {
     Animated.timing(screenOpacity.current, {
@@ -329,10 +349,10 @@ export default function PouringScreen() {
       screenOpacity.current.setValue(1)
       setError("")
       try {
-        const entry = await createEntry(text)
         const result = await reflect(text)
-        await updateEntry(entry.id, result)
-        setResponse(result)
+        const reflection = { input: text, ...result }
+        setResponse(reflection)
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(reflection))
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : JSON.stringify(err)
         console.error("Reflect failed:", message)
@@ -341,10 +361,36 @@ export default function PouringScreen() {
       }
       setLoading(false)
       setSubmitted(true)
+      setSaved(false)
     })
   }
 
-  if (loading) {
+  const handleSave = async () => {
+    if (!response) return
+    try {
+      const entry = await createEntry(response.input)
+      await updateEntry(entry.id, {
+        verse_text: response.verse_text,
+        verse_ref: response.verse_ref,
+        commentary: response.commentary,
+        prayer: response.prayer,
+      })
+      setSaved(true)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : JSON.stringify(err)
+      console.error("Save failed:", message)
+    }
+  }
+
+  const handleNewPouring = async () => {
+    setSubmitted(false)
+    setResponse(null)
+    setText("")
+    setSaved(false)
+    await AsyncStorage.removeItem(STORAGE_KEY)
+  }
+
+  if (restoring || loading) {
     return (
       <GradientBg colors={theme.backgroundGradient}>
         <LoadingContainer>
@@ -359,6 +405,12 @@ export default function PouringScreen() {
   if (submitted && error) {
     return (
       <GradientBg colors={theme.backgroundGradient}>
+        <MenuButton
+          onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+          style={{ top: insets.top + 8 }}
+        >
+          <Feather name="menu" size={20} color={theme.textSecondary} />
+        </MenuButton>
         <Container style={{ paddingTop: insets.top + 48 }}>
           <Commentary style={{ color: theme.textSecondary, textAlign: "center" }}>
             Something went wrong. Please try again.
@@ -375,10 +427,7 @@ export default function PouringScreen() {
               borderWidth: 1,
               marginTop: 24,
             }}
-            onPress={() => {
-              setSubmitted(false)
-              setError("")
-            }}
+            onPress={handleNewPouring}
           >
             <BackText style={{ color: theme.text }}>Try Again</BackText>
           </BackButton>
@@ -390,6 +439,12 @@ export default function PouringScreen() {
   if (submitted && response) {
     return (
       <GradientBg colors={theme.backgroundGradient}>
+        <MenuButton
+          onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+          style={{ top: insets.top + 8 }}
+        >
+          <Feather name="menu" size={20} color={theme.textSecondary} />
+        </MenuButton>
         <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
           <ResponseContainer>
             <VerseContainer>
@@ -399,13 +454,20 @@ export default function PouringScreen() {
             </VerseContainer>
             <Commentary style={{ color: theme.textSecondary }}>{response.commentary}</Commentary>
             <Prayer style={{ color: theme.accent }}>{response.prayer}</Prayer>
+            {!saved ? (
+              <BackButton style={{ backgroundColor: theme.accent }} onPress={handleSave}>
+                <BackText style={{ color: theme.background }}>Save to History</BackText>
+              </BackButton>
+            ) : (
+              <BackText
+                style={{ color: theme.textSecondary, textAlign: "center", marginBottom: 16 }}
+              >
+                Saved
+              </BackText>
+            )}
             <BackButton
               style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
-              onPress={() => {
-                setSubmitted(false)
-                setResponse(null)
-                setText("")
-              }}
+              onPress={handleNewPouring}
             >
               <BackText style={{ color: theme.text }}>New Pouring</BackText>
             </BackButton>
