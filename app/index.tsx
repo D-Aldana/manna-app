@@ -378,6 +378,17 @@ export default function PouringScreen() {
   const placeholder = useTypewriter(restoring ? "" : "Pour it out...", 45, titleDuration + 200)
 
   const screenOpacity = useRef(new Animated.Value(1))
+  const inputOpacity = useRef(new Animated.Value(0))
+
+  useEffect(() => {
+    if (title.done) {
+      Animated.timing(inputOpacity.current, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start()
+    }
+  }, [title.done])
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
@@ -598,11 +609,11 @@ export default function PouringScreen() {
               }}
             >
               <Title style={{ color: theme.accent }}>{title.text}</Title>
-              <InputSection
-                style={{ opacity: title.done ? 1 : 0 }}
+              <Animated.View
+                style={{ opacity: inputOpacity.current, alignSelf: "stretch" }}
                 pointerEvents={title.done ? "auto" : "none"}
               >
-                <FadeIn>
+                <InputSection>
                   <InputWrapper>
                     <InputContainer style={{ borderColor: theme.border }}>
                       <Input
@@ -631,8 +642,8 @@ export default function PouringScreen() {
                       </SubmitOuter>
                     </Fade>
                   </InputWrapper>
-                </FadeIn>
-              </InputSection>
+                </InputSection>
+              </Animated.View>
             </Container>
           </KeyboardAvoidingView>
         </GradientBg>
