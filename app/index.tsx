@@ -21,13 +21,6 @@ import { useTheme } from "@/theme/ThemeContext"
 import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
 
-function getGreeting() {
-  const hour = new Date().getHours()
-  if (hour < 12) return "Good morning"
-  if (hour < 17) return "Good afternoon"
-  return "Good evening"
-}
-
 const STORAGE_KEY = "manna_current_reflection"
 
 type ReflectionData = {
@@ -330,27 +323,39 @@ function Fade({ visible, children }: { visible: boolean; children: ReactNode }) 
 }
 
 function useTypewriter(fullText: string, speed = 60, delay = 0) {
-  const [displayed, setDisplayed] = useState("")
-  const [done, setDone] = useState(false)
+  const skip = !fullText || speed <= 0
+  const [displayed, setDisplayed] = useState(skip ? fullText : "")
+  const [done, setDone] = useState(skip)
 
   useEffect(() => {
-    if (speed <= 0) {
-      setDisplayed(fullText)
-      setDone(true)
-      return
-    }
-    const timeout = setTimeout(() => {
-      let i = 0
-      const interval = setInterval(() => {
-        i++
+    if (skip) return
+    let cancelled = false
+    let i = 0
+    const start = Date.now() + delay
+
+    function tick() {
+      if (cancelled) return
+      const elapsed = Date.now() - start
+      if (elapsed < 0) {
+        requestAnimationFrame(tick)
+        return
+      }
+      const target = Math.min(Math.floor(elapsed / speed) + 1, fullText.length)
+      if (target !== i) {
+        i = target
         setDisplayed(fullText.slice(0, i))
-        if (i >= fullText.length) {
-          clearInterval(interval)
-          setDone(true)
-        }
-      }, speed)
-    }, delay)
-    return () => clearTimeout(timeout)
+      }
+      if (i >= fullText.length) {
+        setDone(true)
+        return
+      }
+      requestAnimationFrame(tick)
+    }
+
+    requestAnimationFrame(tick)
+    return () => {
+      cancelled = true
+    }
   }, [fullText, speed, delay])
 
   return { text: displayed, done }
@@ -367,10 +372,10 @@ export default function PouringScreen() {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState("")
   const [restoring, setRestoring] = useState(true)
-  const titleFullText = `${getGreeting()},\nwhat\u2019s on your heart?`
-  const title = useTypewriter(titleFullText, 45)
+  const titleFullText = "What\u2019s on your heart?"
+  const title = useTypewriter(restoring ? "" : titleFullText, 45)
   const titleDuration = titleFullText.length * 45
-  const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 200)
+  const placeholder = useTypewriter(restoring ? "" : "Pour it out...", 45, titleDuration + 200)
 
   const screenOpacity = useRef(new Animated.Value(1))
 
@@ -439,7 +444,11 @@ export default function PouringScreen() {
     await AsyncStorage.removeItem(STORAGE_KEY)
   }
 
-  if (restoring || loading) {
+  if (restoring) {
+    return <GradientBg colors={theme.backgroundGradient} style={{ flex: 1 }} />
+  }
+
+  if (loading) {
     return (
       <GradientBg colors={theme.backgroundGradient}>
         <LoadingContainer>
@@ -589,40 +598,41 @@ export default function PouringScreen() {
               }}
             >
               <Title style={{ color: theme.accent }}>{title.text}</Title>
-              {title.done && (
-                <InputSection>
-                  <FadeIn>
-                    <InputWrapper>
-                      <InputContainer style={{ borderColor: theme.border }}>
-                        <Input
-                          multiline
-                          submitBehavior="submit"
-                          returnKeyType="send"
-                          onSubmitEditing={() => text.length > 0 && handleSubmit()}
-                          value={text}
-                          onChangeText={setText}
-                          style={{ color: theme.accent }}
-                        />
-                        {text.length === 0 && placeholder.text.length > 0 && (
-                          <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
-                            {placeholder.text}
-                          </PlaceholderOverlay>
-                        )}
-                      </InputContainer>
-                      <Fade visible={text.length > 0}>
-                        <SubmitOuter>
-                          <SubmitButton
-                            style={{ backgroundColor: theme.accent }}
-                            onPress={handleSubmit}
-                          >
-                            <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                          </SubmitButton>
-                        </SubmitOuter>
-                      </Fade>
-                    </InputWrapper>
-                  </FadeIn>
-                </InputSection>
-              )}
+              <InputSection
+                style={{ opacity: title.done ? 1 : 0 }}
+                pointerEvents={title.done ? "auto" : "none"}
+              >
+                <FadeIn>
+                  <InputWrapper>
+                    <InputContainer style={{ borderColor: theme.border }}>
+                      <Input
+                        multiline
+                        submitBehavior="submit"
+                        returnKeyType="send"
+                        onSubmitEditing={() => text.length > 0 && handleSubmit()}
+                        value={text}
+                        onChangeText={setText}
+                        style={{ color: theme.accent }}
+                      />
+                      {text.length === 0 && placeholder.text.length > 0 && (
+                        <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
+                          {placeholder.text}
+                        </PlaceholderOverlay>
+                      )}
+                    </InputContainer>
+                    <Fade visible={text.length > 0}>
+                      <SubmitOuter>
+                        <SubmitButton
+                          style={{ backgroundColor: theme.accent }}
+                          onPress={handleSubmit}
+                        >
+                          <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                        </SubmitButton>
+                      </SubmitOuter>
+                    </Fade>
+                  </InputWrapper>
+                </FadeIn>
+              </InputSection>
             </Container>
           </KeyboardAvoidingView>
         </GradientBg>
