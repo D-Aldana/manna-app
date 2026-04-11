@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef, type ReactNode } from "react"
-import { TextInput, ScrollView, Animated, View, Pressable } from "react-native"
+import {
+  TextInput,
+  ScrollView,
+  Animated,
+  View,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+} from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
@@ -56,9 +65,8 @@ const Title = styled.Text({
 })
 
 const InputSection = styled.View({
-  position: "absolute",
-  left: 24,
-  right: 24,
+  alignSelf: "stretch",
+  marginTop: 32,
 })
 
 const InputWrapper = styled.View({})
@@ -517,43 +525,53 @@ export default function PouringScreen() {
       </ThemeToggleButton>
       <Animated.View style={{ flex: 1, opacity: screenOpacity.current }}>
         <GradientBg colors={theme.backgroundGradient}>
-          <Container>
-            <Title style={{ color: theme.accent }}>{title.text}</Title>
-            {title.done && (
-              <InputSection style={{ top: "55%" }}>
-                <FadeIn>
-                  <InputWrapper>
-                    <InputContainer style={{ borderColor: theme.border }}>
-                      <Input
-                        multiline
-                        submitBehavior="submit"
-                        returnKeyType="send"
-                        onSubmitEditing={() => text.length > 0 && handleSubmit()}
-                        value={text}
-                        onChangeText={setText}
-                        style={{ color: theme.accent }}
-                      />
-                      {text.length === 0 && placeholder.text.length > 0 && (
-                        <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
-                          {placeholder.text}
-                        </PlaceholderOverlay>
-                      )}
-                    </InputContainer>
-                    <Fade visible={text.length > 0}>
-                      <SubmitOuter>
-                        <SubmitButton
-                          style={{ backgroundColor: theme.accent }}
-                          onPress={handleSubmit}
-                        >
-                          <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
-                        </SubmitButton>
-                      </SubmitOuter>
-                    </Fade>
-                  </InputWrapper>
-                </FadeIn>
-              </InputSection>
-            )}
-          </Container>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
+            <Container
+              onStartShouldSetResponder={() => {
+                Keyboard.dismiss()
+                return false
+              }}
+            >
+              <Title style={{ color: theme.accent }}>{title.text}</Title>
+              {title.done && (
+                <InputSection>
+                  <FadeIn>
+                    <InputWrapper>
+                      <InputContainer style={{ borderColor: theme.border }}>
+                        <Input
+                          multiline
+                          submitBehavior="submit"
+                          returnKeyType="send"
+                          onSubmitEditing={() => text.length > 0 && handleSubmit()}
+                          value={text}
+                          onChangeText={setText}
+                          style={{ color: theme.accent }}
+                        />
+                        {text.length === 0 && placeholder.text.length > 0 && (
+                          <PlaceholderOverlay style={{ color: theme.accent }} pointerEvents="none">
+                            {placeholder.text}
+                          </PlaceholderOverlay>
+                        )}
+                      </InputContainer>
+                      <Fade visible={text.length > 0}>
+                        <SubmitOuter>
+                          <SubmitButton
+                            style={{ backgroundColor: theme.accent }}
+                            onPress={handleSubmit}
+                          >
+                            <SubmitText style={{ color: theme.background }}>Pour</SubmitText>
+                          </SubmitButton>
+                        </SubmitOuter>
+                      </Fade>
+                    </InputWrapper>
+                  </FadeIn>
+                </InputSection>
+              )}
+            </Container>
+          </KeyboardAvoidingView>
         </GradientBg>
       </Animated.View>
     </View>
