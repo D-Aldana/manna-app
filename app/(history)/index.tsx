@@ -99,12 +99,15 @@ export default function HistoryScreen() {
   const router = useRouter()
   const [entries, setEntries] = useState<Entry[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useFocusEffect(
     useCallback(() => {
       setLoading(true)
+      setLoadError(false)
       getEntries()
         .then((data) => setEntries(data.filter((e) => e.verse_text)))
+        .catch(() => setLoadError(true))
         .finally(() => setLoading(false))
     }, []),
   )
@@ -133,7 +136,15 @@ export default function HistoryScreen() {
       >
         <Feather name="menu" size={20} color={theme.textSecondary} />
       </MenuButton>
-      {entries.length === 0 && !loading ? (
+      {loadError ? (
+        <EmptyContainer>
+          <Feather name="wifi-off" size={40} color={theme.textSecondary} />
+          <EmptyText style={{ color: theme.text }}>Couldn&apos;t load reflections</EmptyText>
+          <EmptySubtext style={{ color: theme.textSecondary }}>
+            Check your connection and try again.
+          </EmptySubtext>
+        </EmptyContainer>
+      ) : entries.length === 0 && !loading ? (
         <EmptyContainer>
           <Feather name="book-open" size={40} color={theme.textSecondary} />
           <EmptyText style={{ color: theme.text }}>No saved reflections yet</EmptyText>

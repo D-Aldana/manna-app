@@ -403,6 +403,29 @@ export default function PouringScreen() {
   }
 
   if (submitted && error) {
+    const isNetwork =
+      error.includes("Network") || error.includes("fetch") || error.includes("Failed")
+    const isCredits = error.includes("credit") || error.includes("billing") || error.includes("429")
+    const isOverloaded = error.includes("529") || error.includes("overloaded")
+
+    const title = isNetwork
+      ? "No connection"
+      : isCredits
+        ? "Service unavailable"
+        : isOverloaded
+          ? "A moment of rest"
+          : "Something went wrong"
+
+    const message = isNetwork
+      ? "It looks like you\u2019re offline. Check your connection and try again."
+      : isCredits
+        ? "The reflection service is temporarily unavailable. Please try again later."
+        : isOverloaded
+          ? "The service is resting under heavy load. Please try again in a moment."
+          : "We weren\u2019t able to complete your reflection. Your words are still here."
+
+    const icon = isNetwork ? "wifi-off" : isCredits ? "cloud-off" : "cloud-off"
+
     return (
       <GradientBg colors={theme.backgroundGradient}>
         <MenuButton
@@ -412,24 +435,28 @@ export default function PouringScreen() {
           <Feather name="menu" size={20} color={theme.textSecondary} />
         </MenuButton>
         <Container style={{ paddingTop: insets.top + 48 }}>
-          <Commentary style={{ color: theme.textSecondary, textAlign: "center" }}>
-            Something went wrong. Please try again.
+          <Feather
+            name={icon as "wifi-off" | "cloud-off"}
+            size={40}
+            color={theme.textSecondary}
+            style={{ marginBottom: 24 }}
+          />
+          <Title style={{ color: theme.accent, marginBottom: 16 }}>{title}</Title>
+          <Commentary style={{ color: theme.textSecondary, textAlign: "center", marginBottom: 32 }}>
+            {message}
           </Commentary>
-          <Commentary
-            style={{ color: theme.textSecondary, fontSize: 12, opacity: 0.6, textAlign: "center" }}
-          >
-            {error}
-          </Commentary>
+          <BackButton style={{ backgroundColor: theme.accent }} onPress={handleSubmit}>
+            <BackText style={{ color: theme.background }}>Try Again</BackText>
+          </BackButton>
           <BackButton
             style={{
               backgroundColor: theme.surface,
               borderColor: theme.border,
               borderWidth: 1,
-              marginTop: 24,
             }}
             onPress={handleNewPouring}
           >
-            <BackText style={{ color: theme.text }}>Try Again</BackText>
+            <BackText style={{ color: theme.text }}>Start Over</BackText>
           </BackButton>
         </Container>
       </GradientBg>

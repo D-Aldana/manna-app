@@ -151,13 +151,16 @@ export default function ReflectionScreen() {
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
   const [entry, setEntry] = useState<Entry | null>(null)
+  const [loadError, setLoadError] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const modalScale = useRef(new Animated.Value(0.9))
   const modalOpacity = useRef(new Animated.Value(0))
 
   useEffect(() => {
     if (id) {
-      getEntry(id).then(setEntry)
+      getEntry(id)
+        .then(setEntry)
+        .catch(() => setLoadError(true))
     }
   }, [id])
 
@@ -187,6 +190,25 @@ export default function ReflectionScreen() {
     await deleteEntry(id)
     setConfirmDelete(false)
     router.back()
+  }
+
+  if (loadError) {
+    return (
+      <GradientBg colors={theme.backgroundGradient}>
+        <BackButton onPress={() => router.back()} style={{ top: insets.top + 8 }}>
+          <Feather name="arrow-left" size={20} color={theme.textSecondary} />
+        </BackButton>
+        <LoadingContainer>
+          <Feather name="cloud-off" size={40} color={theme.textSecondary} />
+          <LoadingText style={{ color: theme.text, marginTop: 16 }}>
+            Couldn&apos;t load this reflection
+          </LoadingText>
+          <LoadingText style={{ color: theme.textSecondary, fontSize: 14, marginTop: 8 }}>
+            Check your connection and try again.
+          </LoadingText>
+        </LoadingContainer>
+      </GradientBg>
+    )
   }
 
   if (!entry) {
