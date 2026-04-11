@@ -16,9 +16,17 @@ import { useNavigation } from "expo-router"
 import { DrawerActions } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import * as Haptics from "expo-haptics"
 import { useTheme } from "@/theme/ThemeContext"
 import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
+
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return "Good morning"
+  if (hour < 17) return "Good afternoon"
+  return "Good evening"
+}
 
 const STORAGE_KEY = "manna_current_reflection"
 
@@ -272,6 +280,37 @@ function FadeIn({ children }: { children: ReactNode }) {
   return <Animated.View style={{ opacity: opacity.current }}>{children}</Animated.View>
 }
 
+function DelayedFadeIn({ delay = 0, children }: { delay?: number; children: ReactNode }) {
+  const opacity = useRef(new Animated.Value(0))
+  const translateY = useRef(new Animated.Value(12))
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(opacity.current, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY.current, {
+          toValue: 0,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    }, delay)
+    return () => clearTimeout(timeout)
+  }, [delay])
+
+  return (
+    <Animated.View
+      style={{ opacity: opacity.current, transform: [{ translateY: translateY.current }] }}
+    >
+      {children}
+    </Animated.View>
+  )
+}
+
 function Fade({ visible, children }: { visible: boolean; children: ReactNode }) {
   const opacity = useRef(new Animated.Value(0))
 
@@ -328,7 +367,7 @@ export default function PouringScreen() {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState("")
   const [restoring, setRestoring] = useState(true)
-  const titleFullText = "What\u2019s on your heart?"
+  const titleFullText = `${getGreeting()},\nwhat\u2019s on your heart?`
   const title = useTypewriter(titleFullText, 45)
   const titleDuration = titleFullText.length * 45
   const placeholder = useTypewriter("Pour it out...", 45, titleDuration + 200)
@@ -348,6 +387,7 @@ export default function PouringScreen() {
   }, [])
 
   const handleSubmit = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     Animated.timing(screenOpacity.current, {
       toValue: 0,
       duration: 400,
@@ -361,6 +401,7 @@ export default function PouringScreen() {
         const reflection = { input: text, ...result }
         setResponse(reflection)
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(reflection))
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : JSON.stringify(err)
         console.error("Reflect failed:", message)
@@ -482,30 +523,42 @@ export default function PouringScreen() {
         </MenuButton>
         <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
           <ResponseContainer>
-            <VerseContainer>
-              <QuoteMark style={{ color: theme.accent }}>&ldquo;</QuoteMark>
-              <VerseText style={{ color: theme.text }}>{response.verse_text}</VerseText>
-              <VerseRef style={{ color: theme.textSecondary }}>— {response.verse_ref}</VerseRef>
-            </VerseContainer>
-            <Commentary style={{ color: theme.textSecondary }}>{response.commentary}</Commentary>
-            <Prayer style={{ color: theme.accent }}>{response.prayer}</Prayer>
-            {!saved ? (
-              <BackButton style={{ backgroundColor: theme.accent }} onPress={handleSave}>
-                <BackText style={{ color: theme.background }}>Save to History</BackText>
-              </BackButton>
-            ) : (
-              <BackText
-                style={{ color: theme.textSecondary, textAlign: "center", marginBottom: 16 }}
+            <DelayedFadeIn delay={200}>
+              <VerseContainer>
+                <QuoteMark style={{ color: theme.accent }}>&ldquo;</QuoteMark>
+                <VerseText style={{ color: theme.text }}>{response.verse_text}</VerseText>
+                <VerseRef style={{ color: theme.textSecondary }}>— {response.verse_ref}</VerseRef>
+              </VerseContainer>
+            </DelayedFadeIn>
+            <DelayedFadeIn delay={800}>
+              <Commentary style={{ color: theme.textSecondary }}>{response.commentary}</Commentary>
+            </DelayedFadeIn>
+            <DelayedFadeIn delay={1400}>
+              <Prayer style={{ color: theme.accent }}>{response.prayer}</Prayer>
+            </DelayedFadeIn>
+            <DelayedFadeIn delay={2000}>
+              {!saved ? (
+                <BackButton style={{ backgroundColor: theme.accent }} onPress={handleSave}>
+                  <BackText style={{ color: theme.background }}>Save to History</BackText>
+                </BackButton>
+              ) : (
+                <BackText
+                  style={{ color: theme.textSecondary, textAlign: "center", marginBottom: 16 }}
+                >
+                  Saved
+                </BackText>
+              )}
+              <BackButton
+                style={{
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  borderWidth: 1,
+                }}
+                onPress={handleNewPouring}
               >
-                Saved
-              </BackText>
-            )}
-            <BackButton
-              style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
-              onPress={handleNewPouring}
-            >
-              <BackText style={{ color: theme.text }}>New Pouring</BackText>
-            </BackButton>
+                <BackText style={{ color: theme.text }}>New Pouring</BackText>
+              </BackButton>
+            </DelayedFadeIn>
           </ResponseContainer>
         </Container>
       </GradientBg>
