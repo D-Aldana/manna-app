@@ -8,9 +8,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFCF5"
     },
     "ios": {
       "supportsTablet": true,
@@ -18,10 +18,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFCF5",
+        "foregroundImage": "./assets/icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.daldana.manna"
