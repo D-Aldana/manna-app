@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { ScrollView, Pressable, Modal, Animated, Share } from "react-native"
+import { ScrollView, Pressable, Modal, Animated } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
 import { getEntry, deleteEntry, type Entry } from "@/lib/entries"
+import { useShareVerse } from "@/components/ShareVerseImage"
 
 const GradientBg = styled(LinearGradient)({
   flex: 1,
@@ -159,6 +160,10 @@ export default function ReflectionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [entry, setEntry] = useState<Entry | null>(null)
   const [loadError, setLoadError] = useState(false)
+  const { share: handleShare, renderShareImage } = useShareVerse({
+    verseText: entry?.verse_text ?? "",
+    verseRef: entry?.verse_ref ?? "",
+  })
   const [confirmDelete, setConfirmDelete] = useState(false)
   const modalScale = useRef(new Animated.Value(0.9))
   const modalOpacity = useRef(new Animated.Value(0))
@@ -233,14 +238,7 @@ export default function ReflectionScreen() {
       <BackButton onPress={() => router.back()} style={{ top: insets.top + 8 }}>
         <Feather name="arrow-left" size={20} color={theme.textSecondary} />
       </BackButton>
-      <ShareButton
-        onPress={() =>
-          Share.share({
-            message: `\u201C${entry.verse_text}\u201D\n\u2014 ${entry.verse_ref}`,
-          })
-        }
-        style={{ top: insets.top + 8 }}
-      >
+      <ShareButton onPress={handleShare} style={{ top: insets.top + 8 }}>
         <Feather name="share" size={20} color={theme.textSecondary} />
       </ShareButton>
       <Container style={{ paddingTop: insets.top + 48 }}>
@@ -290,6 +288,7 @@ export default function ReflectionScreen() {
           </ModalCard>
         </Overlay>
       </Modal>
+      {renderShareImage()}
     </GradientBg>
   )
 }

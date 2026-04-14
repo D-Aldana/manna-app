@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  Share,
 } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
@@ -21,6 +20,7 @@ import * as Haptics from "expo-haptics"
 import { useTheme } from "@/theme/ThemeContext"
 import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
+import { useShareVerse } from "@/components/ShareVerseImage"
 
 const STORAGE_KEY = "manna_current_reflection"
 
@@ -456,12 +456,10 @@ export default function PouringScreen() {
     await AsyncStorage.removeItem(STORAGE_KEY)
   }
 
-  const handleShare = () => {
-    if (!response) return
-    Share.share({
-      message: `\u201C${response.verse_text}\u201D\n\u2014 ${response.verse_ref}`,
-    })
-  }
+  const { share: handleShare, renderShareImage } = useShareVerse({
+    verseText: response?.verse_text ?? "",
+    verseRef: response?.verse_ref ?? "",
+  })
 
   if (restoring) {
     return <GradientBg colors={theme.backgroundGradient} style={{ flex: 1 }} />
@@ -592,6 +590,7 @@ export default function PouringScreen() {
             </DelayedFadeIn>
           </ResponseContainer>
         </Container>
+        {renderShareImage()}
       </GradientBg>
     )
   }
