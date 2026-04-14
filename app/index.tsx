@@ -549,6 +549,9 @@ export default function PouringScreen() {
         >
           <Feather name="menu" size={20} color={theme.textSecondary} />
         </MenuButton>
+        <ThemeToggleButton onPress={handleShare} style={{ top: insets.top + 8 }}>
+          <Feather name="share" size={20} color={theme.textSecondary} />
+        </ThemeToggleButton>
         <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
           <ResponseContainer>
             <DelayedFadeIn delay={200}>
@@ -576,16 +579,6 @@ export default function PouringScreen() {
                   Saved
                 </BackText>
               )}
-              <BackButton
-                style={{
-                  backgroundColor: theme.surface,
-                  borderColor: theme.border,
-                  borderWidth: 1,
-                }}
-                onPress={handleShare}
-              >
-                <BackText style={{ color: theme.text }}>Share Verse</BackText>
-              </BackButton>
               <BackButton
                 style={{
                   backgroundColor: theme.surface,

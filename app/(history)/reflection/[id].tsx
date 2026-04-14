@@ -19,6 +19,13 @@ const BackButton = styled(Pressable)({
   padding: 8,
 })
 
+const ShareButton = styled(Pressable)({
+  position: "absolute",
+  right: 16,
+  zIndex: 10,
+  padding: 8,
+})
+
 const Container = styled.View({
   flex: 1,
   justifyContent: "flex-start",
@@ -226,6 +233,16 @@ export default function ReflectionScreen() {
       <BackButton onPress={() => router.back()} style={{ top: insets.top + 8 }}>
         <Feather name="arrow-left" size={20} color={theme.textSecondary} />
       </BackButton>
+      <ShareButton
+        onPress={() =>
+          Share.share({
+            message: `\u201C${entry.verse_text}\u201D\n\u2014 ${entry.verse_ref}`,
+          })
+        }
+        style={{ top: insets.top + 8 }}
+      >
+        <Feather name="share" size={20} color={theme.textSecondary} />
+      </ShareButton>
       <Container style={{ paddingTop: insets.top + 48 }}>
         <ResponseContainer>
           <VerseContainer>
@@ -235,16 +252,6 @@ export default function ReflectionScreen() {
           </VerseContainer>
           <Commentary style={{ color: theme.textSecondary }}>{entry.commentary}</Commentary>
           <Prayer style={{ color: theme.accent }}>{entry.prayer}</Prayer>
-          <ActionButton
-            style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
-            onPress={() =>
-              Share.share({
-                message: `\u201C${entry.verse_text}\u201D\n\u2014 ${entry.verse_ref}`,
-              })
-            }
-          >
-            <ActionText style={{ color: theme.text }}>Share Verse</ActionText>
-          </ActionButton>
           <ActionButton
             style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
             onPress={() => setConfirmDelete(true)}
