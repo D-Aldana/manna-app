@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { ScrollView, Pressable, Modal, Animated } from "react-native"
+import { ScrollView, Pressable, Modal, Animated, Share } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
@@ -235,6 +235,16 @@ export default function ReflectionScreen() {
           </VerseContainer>
           <Commentary style={{ color: theme.textSecondary }}>{entry.commentary}</Commentary>
           <Prayer style={{ color: theme.accent }}>{entry.prayer}</Prayer>
+          <ActionButton
+            style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
+            onPress={() =>
+              Share.share({
+                message: `\u201C${entry.verse_text}\u201D\n\u2014 ${entry.verse_ref}`,
+              })
+            }
+          >
+            <ActionText style={{ color: theme.text }}>Share Verse</ActionText>
+          </ActionButton>
           <ActionButton
             style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
             onPress={() => setConfirmDelete(true)}

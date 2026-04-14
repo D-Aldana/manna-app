@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Share,
 } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
@@ -455,6 +456,13 @@ export default function PouringScreen() {
     await AsyncStorage.removeItem(STORAGE_KEY)
   }
 
+  const handleShare = () => {
+    if (!response) return
+    Share.share({
+      message: `\u201C${response.verse_text}\u201D\n\u2014 ${response.verse_ref}`,
+    })
+  }
+
   if (restoring) {
     return <GradientBg colors={theme.backgroundGradient} style={{ flex: 1 }} />
   }
@@ -568,6 +576,16 @@ export default function PouringScreen() {
                   Saved
                 </BackText>
               )}
+              <BackButton
+                style={{
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  borderWidth: 1,
+                }}
+                onPress={handleShare}
+              >
+                <BackText style={{ color: theme.text }}>Share Verse</BackText>
+              </BackButton>
               <BackButton
                 style={{
                   backgroundColor: theme.surface,
