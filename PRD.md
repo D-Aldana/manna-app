@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-**Manna** is a minimal, high-privacy mobile application designed for Christians to process their thoughts and struggles. By utilizing AI to infer context from natural language, the app provides a single, high-quality **NIV Bible verse** accompanied by a gentle, soft explanation and a closing prayer prompt.
+**Manna** is a minimal, high-privacy mobile application designed for Christians to process their thoughts and struggles. By utilizing AI to infer context from natural language, the app provides a single, high-quality **Bible verse (BSB)** accompanied by a gentle, soft explanation and a closing prayer prompt.
 
 ---
 
@@ -30,7 +30,7 @@
 
 ### 3.2 Scriptural Output & Content
 
-- **Single-Verse Focus:** The app returns **one** highly relevant NIV verse to encourage deep meditation.
+- **Single-Verse Focus:** The app returns **one** highly relevant BSB verse to encourage deep meditation.
 - **Soft Commentary:** A 3–5 sentence empathetic explanation focusing purely on the scripture’s meaning.
 - **Guided Prayer:** Every session concludes with a one-sentence prayer based on the selected verse.
 
@@ -54,7 +54,7 @@
 ## 5. Technical Requirements
 
 - **AI Engine:** Claude 4.5 (or Haiku for cost-efficiency) with **Prompt Caching** enabled to minimize token costs.
-- **Bible API:** Integration with the **YouVersion Platform API** for NIV access.
+- **Bible API:** Integration with the **YouVersion Platform API** for BSB (Berean Standard Bible) access. NIV is not available through the Platform API; BSB chosen as modern, accurate, commercially-licensable alternative.
 - **Security:** AES-256 encryption for all user entries stored in **Supabase**.
 
 ---
