@@ -27,6 +27,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router", "expo-font"]
+    "plugins": ["expo-router", "expo-font"],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "21d7347e-535b-4c9a-b48c-cce89c70c47e"
+      }
+    },
+    "owner": "d-aldana"
   }
 }
