@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { ensureSession, supabase } from "@/lib/supabase"
 
 export type Entry = {
   id: string
@@ -11,6 +11,7 @@ export type Entry = {
 }
 
 export async function createEntry(input: string) {
+  await ensureSession()
   const { data, error } = await supabase.from("entries").insert({ input }).select().single()
 
   if (error) throw error
@@ -21,6 +22,7 @@ export async function updateEntry(
   id: string,
   fields: Partial<Pick<Entry, "verse_text" | "verse_ref" | "commentary" | "prayer">>,
 ) {
+  await ensureSession()
   const { data, error } = await supabase
     .from("entries")
     .update(fields)
@@ -33,6 +35,7 @@ export async function updateEntry(
 }
 
 export async function getEntries() {
+  await ensureSession()
   const { data, error } = await supabase
     .from("entries")
     .select()
@@ -43,6 +46,7 @@ export async function getEntries() {
 }
 
 export async function getEntry(id: string) {
+  await ensureSession()
   const { data, error } = await supabase.from("entries").select().eq("id", id).single()
 
   if (error) throw error
@@ -50,6 +54,7 @@ export async function getEntry(id: string) {
 }
 
 export async function deleteEntry(id: string) {
+  await ensureSession()
   const { error } = await supabase.from("entries").delete().eq("id", id)
 
   if (error) throw error
