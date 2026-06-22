@@ -20,6 +20,7 @@ import * as Haptics from "expo-haptics"
 import { useTheme } from "@/theme/ThemeContext"
 import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
+import { useVoiceInput } from "@/lib/useVoiceInput"
 import { useShareVerse } from "@/components/ShareVerseImage"
 
 const STORAGE_KEY = "manna_current_reflection"
@@ -184,6 +185,29 @@ const PourLabel = styled.Text({
   fontFamily: "Nunito_600SemiBold",
   letterSpacing: 1,
   marginRight: 8,
+})
+
+const FooterRight = styled.View({
+  flexDirection: "row",
+  alignItems: "center",
+})
+
+const MicButton = styled.Pressable({
+  width: 52,
+  height: 52,
+  borderRadius: 26,
+  alignItems: "center",
+  justifyContent: "center",
+  borderWidth: 1,
+})
+
+const VoiceHint = styled.Text({
+  fontSize: 13,
+  fontFamily: "Nunito_400Regular",
+  letterSpacing: 0.3,
+  textAlign: "center",
+  paddingHorizontal: 28,
+  marginTop: 10,
 })
 
 const ResponseContainer = styled(ScrollView)({
@@ -474,6 +498,42 @@ export default function PouringScreen() {
     requestAnimationFrame(() => inputRef.current?.focus())
   }
 
+  // Speech-to-text: snapshot the text at start, then append the live transcript.
+  const voiceBase = useRef("")
+  const micPulse = useRef(new Animated.Value(0))
+  const voice = useVoiceInput((transcript, isFinal) => {
+    const base = voiceBase.current
+    const joiner = base && !base.endsWith(" ") ? " " : ""
+    const next = base + joiner + transcript
+    setText(next)
+    if (isFinal) voiceBase.current = next
+  })
+
+  useEffect(() => {
+    if (voice.isListening) {
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(micPulse.current, { toValue: 1, duration: 800, useNativeDriver: true }),
+          Animated.timing(micPulse.current, { toValue: 0, duration: 800, useNativeDriver: true }),
+        ]),
+      )
+      loop.start()
+      return () => loop.stop()
+    }
+    micPulse.current.setValue(0)
+  }, [voice.isListening])
+
+  const toggleVoice = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    if (voice.isListening) {
+      voice.stop()
+      return
+    }
+    Keyboard.dismiss()
+    voiceBase.current = text
+    voice.start()
+  }
+
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
       if (stored) {
@@ -489,6 +549,7 @@ export default function PouringScreen() {
   const handleSubmit = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     Keyboard.dismiss()
+    if (voice.isListening) voice.stop()
     Animated.timing(screenOpacity.current, {
       toValue: 0,
       duration: 500,
@@ -686,6 +747,17 @@ export default function PouringScreen() {
     ],
   }
 
+  const voiceHint =
+    voice.status === "listening"
+      ? "Listening… tap the mic when you’re done"
+      : voice.status === "denied"
+        ? "Microphone access is off — enable it in Settings to speak"
+        : voice.status === "unavailable"
+          ? "Voice input isn’t available on this device"
+          : voice.status === "error"
+            ? "Didn’t catch that — tap the mic to try again"
+            : null
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <GradientBg colors={theme.backgroundGradient}>
@@ -765,45 +837,87 @@ export default function PouringScreen() {
               </Animated.View>
             </WritingContainer>
             <Animated.View style={enterStyle}>
+              {voiceHint ? (
+                <VoiceHint style={{ color: theme.textSecondary }}>{voiceHint}</VoiceHint>
+              ) : null}
               <Footer style={{ paddingBottom: insets.bottom + 12 }}>
-                <WordCount style={{ color: theme.textSecondary, opacity: canPour ? 0.7 : 0 }}>
-                  {wordCount} {wordCount === 1 ? "word" : "words"}
-                </WordCount>
                 <Animated.View
                   style={{
                     transform: [
                       {
-                        scale: pour.current.interpolate({
+                        scale: micPulse.current.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [0.96, 1],
+                          outputRange: [1, 1.12],
                         }),
                       },
                     ],
-                    opacity: pour.current.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.45, 1],
-                    }),
                   }}
                 >
-                  <PourButton
-                    disabled={!canPour}
-                    onPress={handleSubmit}
+                  <MicButton
+                    onPress={toggleVoice}
+                    accessibilityLabel={
+                      voice.isListening ? "Stop listening" : "Speak your reflection"
+                    }
                     style={{
-                      backgroundColor: canPour ? theme.accent : theme.surface,
-                      borderWidth: canPour ? 0 : 1,
-                      borderColor: theme.border,
+                      backgroundColor: voice.isListening ? theme.accent : "transparent",
+                      borderColor: voice.isListening ? theme.accent : theme.border,
                     }}
                   >
-                    <PourLabel style={{ color: canPour ? theme.background : theme.textSecondary }}>
-                      Pour
-                    </PourLabel>
                     <Feather
-                      name="droplet"
-                      size={16}
-                      color={canPour ? theme.background : theme.textSecondary}
+                      name="mic"
+                      size={22}
+                      color={voice.isListening ? theme.background : theme.accent}
                     />
-                  </PourButton>
+                  </MicButton>
                 </Animated.View>
+                <FooterRight>
+                  <WordCount
+                    style={{
+                      color: theme.textSecondary,
+                      opacity: canPour ? 0.7 : 0,
+                      marginRight: 14,
+                    }}
+                  >
+                    {wordCount} {wordCount === 1 ? "word" : "words"}
+                  </WordCount>
+                  <Animated.View
+                    style={{
+                      transform: [
+                        {
+                          scale: pour.current.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.96, 1],
+                          }),
+                        },
+                      ],
+                      opacity: pour.current.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.45, 1],
+                      }),
+                    }}
+                  >
+                    <PourButton
+                      disabled={!canPour}
+                      onPress={handleSubmit}
+                      style={{
+                        backgroundColor: canPour ? theme.accent : theme.surface,
+                        borderWidth: canPour ? 0 : 1,
+                        borderColor: theme.border,
+                      }}
+                    >
+                      <PourLabel
+                        style={{ color: canPour ? theme.background : theme.textSecondary }}
+                      >
+                        Pour
+                      </PourLabel>
+                      <Feather
+                        name="droplet"
+                        size={16}
+                        color={canPour ? theme.background : theme.textSecondary}
+                      />
+                    </PourButton>
+                  </Animated.View>
+                </FooterRight>
               </Footer>
             </Animated.View>
           </KeyboardAvoidingView>
