@@ -44,3 +44,6 @@ yarn-error.*
 # claude
 .claude/
 CLAUDE.md
+
+# transient secret-rotation scratch file
+.secrets.tmp
