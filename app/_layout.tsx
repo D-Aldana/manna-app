@@ -85,6 +85,22 @@ function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScr
           onPress={() => props.navigation.navigate("(history)")}
         />
 
+        <DrawerItem
+          label="Support Manna"
+          focused={currentIndex === 2}
+          activeTintColor={theme.accent}
+          inactiveTintColor={theme.textSecondary}
+          activeBackgroundColor={theme.background}
+          icon={({ color, size }) => <Feather name="gift" size={size} color={color} />}
+          labelStyle={{
+            fontFamily: "Nunito_600SemiBold",
+            fontSize: 16,
+            letterSpacing: 0.3,
+          }}
+          style={{ borderRadius: 12, marginHorizontal: 8 }}
+          onPress={() => props.navigation.navigate("support")}
+        />
+
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Svg width={240} height={240} viewBox="0 0 466 466" opacity={0.1}>
             <Path
@@ -125,6 +141,7 @@ function DrawerLayout() {
     >
       <Drawer.Screen name="index" />
       <Drawer.Screen name="(history)" />
+      <Drawer.Screen name="support" />
     </Drawer>
   )
 }

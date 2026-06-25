@@ -402,6 +402,12 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
 
+[functions.support]
+enabled = true
+# Opened directly in a browser (no auth header), so JWT verification must be off
+verify_jwt = false
+entrypoint = "./functions/support/index.ts"
+
 [functions.reflect]
 enabled = true
 # App has no user auth; clients send the non-JWT publishable key, so JWT verification would reject all calls
