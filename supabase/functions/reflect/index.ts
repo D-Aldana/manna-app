@@ -21,7 +21,10 @@ const RATE_LIMIT_PER_USER = Number(Deno.env.get("RATE_LIMIT_PER_USER") ?? 20)
 const RATE_LIMIT_PER_IP = Number(Deno.env.get("RATE_LIMIT_PER_IP") ?? 60)
 const RATE_WINDOW_SECONDS = 3600
 
-const SYSTEM_PROMPT = `You are a compassionate Christian spiritual companion. The user shares what is on their heart.
+// Fallback only. The live prompt is the `reflect_system_prompt` row in
+// app_config (editable in the Supabase dashboard, no deploy); this is used if
+// that row is missing or the lookup fails. Keep it in sync as a safety net.
+const DEFAULT_SYSTEM_PROMPT = `You are a compassionate Christian spiritual companion. The user shares what is on their heart.
 
 Respond with ONLY valid JSON (no markdown, no code fences):
 {"verse_ref":"Book Chapter:Verse","commentary":"2-3 warm sentences connecting the verse to the user","prayer":"2-3 sentence closing prayer ending with Amen."}
@@ -42,6 +45,32 @@ type ClaudeReflection = {
   verse_ref: string
   commentary: string
   prayer: string
+}
+
+// Cache the DB-sourced prompt across warm invocations so edits propagate within
+// a minute without a per-request lookup.
+const PROMPT_TTL_MS = 60_000
+let cachedPrompt: string | null = null
+let cachedPromptAt = 0
+
+async function getSystemPrompt(supabase: ReturnType<typeof createClient>): Promise<string> {
+  const now = Date.now()
+  if (cachedPrompt && now - cachedPromptAt < PROMPT_TTL_MS) return cachedPrompt
+
+  const { data, error } = await supabase
+    .from("app_config")
+    .select("value")
+    .eq("key", "reflect_system_prompt")
+    .maybeSingle()
+
+  if (error) {
+    console.error("Prompt fetch error:", error)
+    return cachedPrompt ?? DEFAULT_SYSTEM_PROMPT
+  }
+
+  cachedPrompt = (data?.value as string) ?? DEFAULT_SYSTEM_PROMPT
+  cachedPromptAt = now
+  return cachedPrompt
 }
 
 Deno.serve(async (req) => {
@@ -94,11 +123,12 @@ Deno.serve(async (req) => {
       abbreviation: BIBLE_ABBREVIATION,
     })
 
-    let reflection = await callClaude(input)
+    const systemPrompt = await getSystemPrompt(supabase)
+    let reflection = await callClaude(input, systemPrompt)
     let verse = await resolveVerse(reflection.verse_ref, verseSource, supabase)
 
     if (verse.status === "not_found" || verse.status === "unparseable") {
-      reflection = await callClaude(input, reflection.verse_ref)
+      reflection = await callClaude(input, systemPrompt, reflection.verse_ref)
       verse = await resolveVerse(reflection.verse_ref, verseSource, supabase)
     }
 
@@ -119,7 +149,11 @@ Deno.serve(async (req) => {
   }
 })
 
-async function callClaude(input: string, badRef?: string): Promise<ClaudeReflection> {
+async function callClaude(
+  input: string,
+  systemPrompt: string,
+  badRef?: string,
+): Promise<ClaudeReflection> {
   const messages: Array<{ role: string; content: string }> = [{ role: "user", content: input }]
   if (badRef) {
     messages.push({
@@ -142,7 +176,7 @@ async function callClaude(input: string, badRef?: string): Promise<ClaudeReflect
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 384,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages,
     }),
   })
