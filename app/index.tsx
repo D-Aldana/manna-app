@@ -25,6 +25,11 @@ import { useShareVerse } from "@/components/ShareVerseImage"
 
 const STORAGE_KEY = "manna_current_reflection"
 
+// Matches the reflect edge function's input cap; the server enforces the same
+// limit as a backstop. Show a countdown once the user nears it.
+const MAX_CHARS = 4000
+const CHARS_WARN_AT = MAX_CHARS - 200
+
 type ReflectionData = {
   input: string
   verse_text: string
@@ -486,6 +491,8 @@ export default function PouringScreen() {
 
   const canPour = text.trim().length > 0
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0
+  const nearLimit = text.length >= CHARS_WARN_AT
+  const charsLeft = MAX_CHARS - text.length
 
   const screenOpacity = useRef(new Animated.Value(1))
   const enter = useRef(new Animated.Value(0))
@@ -534,7 +541,7 @@ export default function PouringScreen() {
   const voice = useVoiceInput((transcript, isFinal) => {
     const base = voiceBase.current
     const joiner = base && !base.endsWith(" ") ? " " : ""
-    const next = base + joiner + transcript
+    const next = (base + joiner + transcript).slice(0, MAX_CHARS)
     setText(next)
     if (isFinal) voiceBase.current = next
   })
@@ -857,6 +864,7 @@ export default function PouringScreen() {
                   <WritingInput
                     ref={inputRef}
                     multiline
+                    maxLength={MAX_CHARS}
                     value={text}
                     onChangeText={setText}
                     selectionColor={theme.accent}
@@ -926,12 +934,14 @@ export default function PouringScreen() {
                 <FooterRight>
                   <WordCount
                     style={{
-                      color: theme.textSecondary,
-                      opacity: canPour ? 0.7 : 0,
+                      color: nearLimit ? theme.accent : theme.textSecondary,
+                      opacity: nearLimit ? 0.9 : canPour ? 0.7 : 0,
                       marginRight: 14,
                     }}
                   >
-                    {wordCount} {wordCount === 1 ? "word" : "words"}
+                    {nearLimit
+                      ? `${charsLeft} left`
+                      : `${wordCount} ${wordCount === 1 ? "word" : "words"}`}
                   </WordCount>
                   <Animated.View
                     style={{

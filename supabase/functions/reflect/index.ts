@@ -10,6 +10,11 @@ const BIBLE_ABBREVIATION = Deno.env.get("BIBLE_ABBREVIATION") ?? "BSB"
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 
+// Cost protection. A Pouring is a few paragraphs; the daily cap is a flood
+// breaker, not a normal-usage limit. Both tunable without a code change.
+const MAX_INPUT_CHARS = Number(Deno.env.get("MAX_INPUT_CHARS") ?? 4000)
+const DAILY_CALL_LIMIT = Number(Deno.env.get("DAILY_CALL_LIMIT") ?? 1000)
+
 const SYSTEM_PROMPT = `You are a compassionate Christian spiritual companion. The user shares what is on their heart.
 
 Respond with ONLY valid JSON (no markdown, no code fences):
@@ -43,8 +48,21 @@ Deno.serve(async (req) => {
     if (!input || typeof input !== "string") {
       return jsonResponse({ error: "input is required" }, 400)
     }
+    if (input.length > MAX_INPUT_CHARS) {
+      return jsonResponse({ error: "input is too long" }, 413)
+    }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+    // Daily circuit breaker — stop calling Claude past the cap. Fail open on a
+    // counter error; the Anthropic spend limit is the hard backstop.
+    const { data: callCount, error: counterErr } = await supabase.rpc("increment_usage_counter")
+    if (counterErr) {
+      console.error("Usage counter error:", counterErr)
+    } else if (typeof callCount === "number" && callCount > DAILY_CALL_LIMIT) {
+      return jsonResponse({ error: "Daily limit reached. Please try again tomorrow." }, 503)
+    }
+
     const verseSource = createYouVersionSource({
       appKey: YOUVERSION_APP_KEY,
       bibleId: BIBLE_ID,
