@@ -410,8 +410,9 @@ entrypoint = "./functions/support/index.ts"
 
 [functions.reflect]
 enabled = true
-# App has no user auth; clients send the non-JWT publishable key, so JWT verification would reject all calls
-verify_jwt = false
+# Clients sign in anonymously and send the user access token (a JWT), so the
+# gateway can verify it. Blocks unauthenticated curling of the function URL.
+verify_jwt = true
 import_map = "./functions/reflect/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
