@@ -40,6 +40,35 @@ const ResponseContainer = styled(ScrollView)({
   paddingHorizontal: 24,
 })
 
+const PouredRecap = styled.View({
+  marginBottom: 28,
+  paddingBottom: 22,
+  borderBottomWidth: 1,
+})
+
+const PouredLabel = styled.Text({
+  fontSize: 12,
+  fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 1.5,
+  textTransform: "uppercase",
+  marginBottom: 10,
+})
+
+const PouredText = styled.Text({
+  fontSize: 15,
+  fontFamily: "CormorantGaramond_400Regular",
+  fontStyle: "italic",
+  lineHeight: 24,
+  letterSpacing: 0.2,
+})
+
+const PouredToggle = styled.Text({
+  fontSize: 13,
+  fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 0.3,
+  marginTop: 10,
+})
+
 const VerseContainer = styled.View({
   alignItems: "center",
   marginBottom: 28,
@@ -165,6 +194,7 @@ export default function ReflectionScreen() {
     verseRef: entry?.verse_ref ?? "",
   })
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [inputExpanded, setInputExpanded] = useState(false)
   const modalScale = useRef(new Animated.Value(0.9))
   const modalOpacity = useRef(new Animated.Value(0))
 
@@ -233,6 +263,8 @@ export default function ReflectionScreen() {
     )
   }
 
+  const inputIsLong = (entry.input?.length ?? 0) > 180
+
   return (
     <GradientBg colors={theme.backgroundGradient}>
       <BackButton onPress={() => router.back()} style={{ top: insets.top + 8 }}>
@@ -243,6 +275,24 @@ export default function ReflectionScreen() {
       </ShareButton>
       <Container style={{ paddingTop: insets.top + 48 }}>
         <ResponseContainer>
+          {entry.input ? (
+            <PouredRecap style={{ borderBottomColor: theme.border }}>
+              <PouredLabel style={{ color: theme.textSecondary }}>You poured out</PouredLabel>
+              <PouredText
+                style={{ color: theme.textSecondary }}
+                numberOfLines={inputIsLong && !inputExpanded ? 4 : undefined}
+              >
+                {entry.input}
+              </PouredText>
+              {inputIsLong ? (
+                <Pressable onPress={() => setInputExpanded((v) => !v)} hitSlop={8}>
+                  <PouredToggle style={{ color: theme.accent }}>
+                    {inputExpanded ? "Show less" : "Show more"}
+                  </PouredToggle>
+                </Pressable>
+              ) : null}
+            </PouredRecap>
+          ) : null}
           <VerseContainer>
             <QuoteMark style={{ color: theme.accent }}>&ldquo;</QuoteMark>
             <VerseText style={{ color: theme.text }}>{entry.verse_text}</VerseText>

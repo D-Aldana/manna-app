@@ -215,6 +215,35 @@ const ResponseContainer = styled(ScrollView)({
   paddingHorizontal: 24,
 })
 
+const PouredRecap = styled.View({
+  marginBottom: 28,
+  paddingBottom: 22,
+  borderBottomWidth: 1,
+})
+
+const PouredLabel = styled.Text({
+  fontSize: 12,
+  fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 1.5,
+  textTransform: "uppercase",
+  marginBottom: 10,
+})
+
+const PouredText = styled.Text({
+  fontSize: 15,
+  fontFamily: "CormorantGaramond_400Regular",
+  fontStyle: "italic",
+  lineHeight: 24,
+  letterSpacing: 0.2,
+})
+
+const PouredToggle = styled.Text({
+  fontSize: 13,
+  fontFamily: "Nunito_600SemiBold",
+  letterSpacing: 0.3,
+  marginTop: 10,
+})
+
 const VerseContainer = styled.View({
   alignItems: "center",
   marginBottom: 28,
@@ -447,6 +476,7 @@ export default function PouringScreen() {
   const [submitted, setSubmitted] = useState(false)
   const [response, setResponse] = useState<ReflectionData | null>(null)
   const [saved, setSaved] = useState(false)
+  const [inputExpanded, setInputExpanded] = useState(false)
   const [error, setError] = useState("")
   const [restoring, setRestoring] = useState(true)
   const titleFullText = "What\u2019s on your heart?"
@@ -558,6 +588,7 @@ export default function PouringScreen() {
       setLoading(true)
       screenOpacity.current.setValue(1)
       setError("")
+      setInputExpanded(false)
       try {
         const result = await reflect(text)
         const reflection = { input: text, ...result }
@@ -598,6 +629,7 @@ export default function PouringScreen() {
     setResponse(null)
     setText("")
     setSaved(false)
+    setInputExpanded(false)
     await AsyncStorage.removeItem(STORAGE_KEY)
   }
 
@@ -684,6 +716,7 @@ export default function PouringScreen() {
   }
 
   if (submitted && response) {
+    const inputIsLong = (response.input?.length ?? 0) > 180
     return (
       <GradientBg colors={theme.backgroundGradient}>
         <MenuButton
@@ -697,6 +730,26 @@ export default function PouringScreen() {
         </ThemeToggleButton>
         <Container style={{ paddingTop: insets.top + 48, justifyContent: "flex-start" }}>
           <ResponseContainer>
+            {response.input ? (
+              <DelayedFadeIn delay={100}>
+                <PouredRecap style={{ borderBottomColor: theme.border }}>
+                  <PouredLabel style={{ color: theme.textSecondary }}>You poured out</PouredLabel>
+                  <PouredText
+                    style={{ color: theme.textSecondary }}
+                    numberOfLines={inputIsLong && !inputExpanded ? 4 : undefined}
+                  >
+                    {response.input}
+                  </PouredText>
+                  {inputIsLong ? (
+                    <Pressable onPress={() => setInputExpanded((v) => !v)} hitSlop={8}>
+                      <PouredToggle style={{ color: theme.accent }}>
+                        {inputExpanded ? "Show less" : "Show more"}
+                      </PouredToggle>
+                    </Pressable>
+                  ) : null}
+                </PouredRecap>
+              </DelayedFadeIn>
+            ) : null}
             <DelayedFadeIn delay={200}>
               <VerseContainer>
                 <QuoteMark style={{ color: theme.accent }}>&ldquo;</QuoteMark>
