@@ -14,6 +14,12 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 // breaker, not a normal-usage limit. Both tunable without a code change.
 const MAX_INPUT_CHARS = Number(Deno.env.get("MAX_INPUT_CHARS") ?? 4000)
 const DAILY_CALL_LIMIT = Number(Deno.env.get("DAILY_CALL_LIMIT") ?? 1000)
+// Per-source cap, keyed on both user and IP so one IP minting many anon users
+// is still bounded. The IP limit is looser since carrier-grade NAT pools many
+// real users behind one address. The global daily limit catches distributed floods.
+const RATE_LIMIT_PER_USER = Number(Deno.env.get("RATE_LIMIT_PER_USER") ?? 20)
+const RATE_LIMIT_PER_IP = Number(Deno.env.get("RATE_LIMIT_PER_IP") ?? 60)
+const RATE_WINDOW_SECONDS = 3600
 
 const SYSTEM_PROMPT = `You are a compassionate Christian spiritual companion. The user shares what is on their heart.
 
@@ -53,6 +59,25 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+    // Per-source rate limit. Runs before the global counter so blocked requests
+    // don't inflate it. Fails open on a counter error.
+    const buckets = [{ key: `ip:${clientIp(req)}`, limit: RATE_LIMIT_PER_IP }]
+    const userId = userIdFromJwt(req)
+    if (userId) buckets.push({ key: `user:${userId}`, limit: RATE_LIMIT_PER_USER })
+    for (const { key, limit } of buckets) {
+      const { data: hits, error: rlErr } = await supabase.rpc("bump_rate_limit", {
+        p_bucket: key,
+        p_window_seconds: RATE_WINDOW_SECONDS,
+      })
+      if (rlErr) {
+        console.error("Rate limit error:", rlErr)
+        break
+      }
+      if (typeof hits === "number" && hits > limit) {
+        return jsonResponse({ error: "Too many requests. Please rest and try again later." }, 429)
+      }
+    }
 
     // Daily circuit breaker — stop calling Claude past the cap. Fail open on a
     // counter error; the Anthropic spend limit is the hard backstop.
@@ -177,6 +202,26 @@ async function resolveVerse(
   })
 
   return { status: "ok", text: fetched.text, canonical: parsed.canonical }
+}
+
+function clientIp(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for")
+  return fwd ? fwd.split(",")[0].trim() : "unknown"
+}
+
+// The API gateway already verified the JWT (verify_jwt=true); we only read `sub`
+// for the rate-limit key, so decoding the payload without re-verifying is safe.
+function userIdFromJwt(req: Request): string | null {
+  const auth = req.headers.get("authorization")
+  if (!auth?.startsWith("Bearer ")) return null
+  try {
+    const payload = auth.slice(7).split(".")[1]
+    if (!payload) return null
+    const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")))
+    return typeof json.sub === "string" ? json.sub : null
+  } catch {
+    return null
+  }
 }
 
 function jsonResponse(body: unknown, status = 200) {

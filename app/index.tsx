@@ -664,26 +664,36 @@ export default function PouringScreen() {
   if (submitted && error) {
     const isNetwork =
       error.includes("Network") || error.includes("fetch") || error.includes("Failed")
-    const isCredits = error.includes("credit") || error.includes("billing") || error.includes("429")
+    const isRateLimited = error.includes("429") || error.includes("Too many requests")
+    const isDailyLimit = error.includes("503") || error.includes("Daily limit")
+    const isCredits = error.includes("credit") || error.includes("billing")
     const isOverloaded = error.includes("529") || error.includes("overloaded")
 
     const title = isNetwork
       ? "No connection"
-      : isCredits
-        ? "Service unavailable"
-        : isOverloaded
-          ? "A moment of rest"
-          : "Something went wrong"
+      : isRateLimited
+        ? "A moment of stillness"
+        : isDailyLimit
+          ? "Resting for today"
+          : isCredits
+            ? "Service unavailable"
+            : isOverloaded
+              ? "A moment of rest"
+              : "Something went wrong"
 
     const message = isNetwork
       ? "It looks like you\u2019re offline. Check your connection and try again."
-      : isCredits
-        ? "The reflection service is temporarily unavailable. Please try again later."
-        : isOverloaded
-          ? "The service is resting under heavy load. Please try again in a moment."
-          : "We weren\u2019t able to complete your reflection. Your words are still here."
+      : isRateLimited
+        ? "You\u2019ve poured out many times in a short while. Rest a moment, then return when you\u2019re ready."
+        : isDailyLimit
+          ? "Manna is resting for today. Please return tomorrow to pour out your heart."
+          : isCredits
+            ? "The reflection service is temporarily unavailable. Please try again later."
+            : isOverloaded
+              ? "The service is resting under heavy load. Please try again in a moment."
+              : "We weren\u2019t able to complete your reflection. Your words are still here."
 
-    const icon = isNetwork ? "wifi-off" : isCredits ? "cloud-off" : "cloud-off"
+    const icon = isNetwork ? "wifi-off" : isRateLimited || isDailyLimit ? "clock" : "cloud-off"
 
     return (
       <GradientBg colors={theme.backgroundGradient}>
@@ -695,7 +705,7 @@ export default function PouringScreen() {
         </MenuButton>
         <Container style={{ paddingTop: insets.top + 48 }}>
           <Feather
-            name={icon as "wifi-off" | "cloud-off"}
+            name={icon as "wifi-off" | "cloud-off" | "clock"}
             size={40}
             color={theme.textSecondary}
             style={{ marginBottom: 24 }}
