@@ -162,7 +162,7 @@ async function callClaude(
     })
     messages.push({
       role: "user",
-      content: `The reference "${badRef}" could not be found. Pick a different real NIV verse and respond again in the same JSON format.`,
+      content: `The reference "${badRef}" could not be found. Pick a different real verse and respond again in the same JSON format.`,
     })
   }
 
