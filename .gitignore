@@ -47,3 +47,6 @@ CLAUDE.md
 
 # transient secret-rotation scratch file
 .secrets.tmp
+
+# legal pages hosted on personal site, not versioned here
+docs/
