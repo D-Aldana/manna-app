@@ -8,6 +8,7 @@ import { DrawerActions } from "@react-navigation/native"
 import { useFocusEffect } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
+import { CONTENT_MAX_WIDTH } from "@/theme/layout"
 import { getEntries, type Entry } from "@/lib/entries"
 
 const GradientBg = styled(LinearGradient)({
@@ -157,7 +158,13 @@ export default function HistoryScreen() {
           data={entries}
           keyExtractor={(item) => item.id}
           renderItem={renderEntry}
-          contentContainerStyle={{ paddingTop: insets.top + 56, paddingBottom: 32 }}
+          contentContainerStyle={{
+            paddingTop: insets.top + 56,
+            paddingBottom: 32,
+            width: "100%",
+            maxWidth: CONTENT_MAX_WIDTH,
+            alignSelf: "center",
+          }}
           ListHeaderComponent={<Header style={{ color: theme.accent }}>Past Reflections</Header>}
         />
       )}

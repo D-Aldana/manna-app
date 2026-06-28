@@ -7,6 +7,7 @@ import { useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import * as Haptics from "expo-haptics"
 import { useTheme } from "@/theme/ThemeContext"
+import { CONTENT_MAX_WIDTH } from "@/theme/layout"
 import { openDonationPage } from "@/lib/donations"
 
 const GradientBg = styled(LinearGradient)({
@@ -25,6 +26,9 @@ const Container = styled.View({
   justifyContent: "center",
   alignItems: "center",
   paddingHorizontal: 32,
+  width: "100%",
+  maxWidth: CONTENT_MAX_WIDTH,
+  alignSelf: "center",
 })
 
 const IconCircle = styled.View({
