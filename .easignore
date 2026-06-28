@@ -1,0 +1,53 @@
+# EAS uses this file INSTEAD of .gitignore when present, so it must repeat
+# everything in .gitignore, plus extras that shouldn't be uploaded to builds.
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# claude
+.claude/
+CLAUDE.md
+
+# transient secret-rotation scratch file
+.secrets.tmp
+
+# store listing assets — kept in git, but not needed in app builds
+assets/store/

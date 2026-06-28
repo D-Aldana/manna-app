@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as Haptics from "expo-haptics"
 import { useTheme } from "@/theme/ThemeContext"
+import { CONTENT_MAX_WIDTH } from "@/theme/layout"
 import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
 import { useVoiceInput } from "@/lib/useVoiceInput"
@@ -99,6 +100,9 @@ const GlowOverlay = styled(LinearGradient)({
 const WritingContainer = styled.View({
   flex: 1,
   paddingHorizontal: 28,
+  width: "100%",
+  maxWidth: CONTENT_MAX_WIDTH,
+  alignSelf: "center",
 })
 
 const PourTitle = styled.Text({
@@ -218,6 +222,9 @@ const VoiceHint = styled.Text({
 const ResponseContainer = styled(ScrollView)({
   flex: 1,
   paddingHorizontal: 24,
+  width: "100%",
+  maxWidth: CONTENT_MAX_WIDTH,
+  alignSelf: "center",
 })
 
 const PouredRecap = styled.View({
@@ -711,7 +718,14 @@ export default function PouringScreen() {
             style={{ marginBottom: 24 }}
           />
           <Title style={{ color: theme.accent, marginBottom: 16 }}>{title}</Title>
-          <Commentary style={{ color: theme.textSecondary, textAlign: "center", marginBottom: 32 }}>
+          <Commentary
+            style={{
+              color: theme.textSecondary,
+              textAlign: "center",
+              marginBottom: 32,
+              maxWidth: CONTENT_MAX_WIDTH,
+            }}
+          >
             {message}
           </Commentary>
           <BackButton style={{ backgroundColor: theme.accent }} onPress={handleSubmit}>
@@ -907,7 +921,12 @@ export default function PouringScreen() {
                 </InputCard>
               </Animated.View>
             </WritingContainer>
-            <Animated.View style={enterStyle}>
+            <Animated.View
+              style={[
+                enterStyle,
+                { width: "100%", maxWidth: CONTENT_MAX_WIDTH, alignSelf: "center" },
+              ]}
+            >
               {voiceHint ? (
                 <VoiceHint style={{ color: theme.textSecondary }}>{voiceHint}</VoiceHint>
               ) : null}

@@ -6,6 +6,7 @@ import { Feather } from "@expo/vector-icons"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
+import { CONTENT_MAX_WIDTH } from "@/theme/layout"
 import { getEntry, deleteEntry, type Entry } from "@/lib/entries"
 import { useShareVerse } from "@/components/ShareVerseImage"
 
@@ -38,6 +39,9 @@ const Container = styled.View({
 const ResponseContainer = styled(ScrollView)({
   flex: 1,
   paddingHorizontal: 24,
+  width: "100%",
+  maxWidth: CONTENT_MAX_WIDTH,
+  alignSelf: "center",
 })
 
 const PouredRecap = styled.View({
