@@ -49,5 +49,7 @@ CLAUDE.md
 # transient secret-rotation scratch file
 .secrets.tmp
 
+# legal pages hosted on personal site, not versioned here
+docs/
 # store listing assets — kept in git, but not needed in app builds
 assets/store/
