@@ -408,6 +408,14 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/support/index.ts"
 
+[functions.feedback]
+enabled = true
+# Clients sign in anonymously and send the user access token (a JWT), so the
+# gateway can verify it. Blocks unauthenticated curling of the function URL.
+verify_jwt = true
+import_map = "./functions/feedback/deno.json"
+entrypoint = "./functions/feedback/index.ts"
+
 [functions.reflect]
 enabled = true
 # Clients sign in anonymously and send the user access token (a JWT), so the
