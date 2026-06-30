@@ -52,8 +52,7 @@ CLAUDE.md
 # legal pages hosted on personal site, not versioned here
 docs/
 
-# store listing assets — kept in git, but not needed in app builds
-assets/store/
-
 # server-side only — deployed via the Supabase CLI, never bundled in the app
 supabase/
+# store listing assets — kept in git, but not needed in app builds
+assets/store/
