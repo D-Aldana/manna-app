@@ -50,3 +50,6 @@ CLAUDE.md
 
 # legal pages hosted on personal site, not versioned here
 docs/
+
+# stray signing/cert artifacts
+*.der
