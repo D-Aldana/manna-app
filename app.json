@@ -18,6 +18,8 @@
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "Manna uses speech recognition to turn your spoken words into text on your device.",
         "NSMicrophoneUsageDescription": "Manna uses the microphone so you can speak your reflection instead of typing.",
+        "NSPhotoLibraryUsageDescription": "Manna needs access to your photo library so you can save a verse image when you share it.",
+        "NSPhotoLibraryAddUsageDescription": "Manna needs permission to save a verse image to your photo library when you share it.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
