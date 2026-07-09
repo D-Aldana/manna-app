@@ -19,7 +19,12 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ymgjcqgvzxpjmdootjip.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_pGpcVkVrRnvuCljlfMemUg_7Wl89am5",
+        "EXPO_PUBLIC_DONATION_URL": "https://ymgjcqgvzxpjmdootjip.supabase.co/functions/v1/support"
+      }
     }
   },
   "submit": {
