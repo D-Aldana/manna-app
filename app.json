@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/android_icons/icon_512.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.daldana.manna"
+      "package": "com.manna.builtbydustin"
     },
     "web": {
       "favicon": "./assets/favicon.png"
