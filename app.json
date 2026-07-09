@@ -14,7 +14,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.d-aldana.manna"
+      "bundleIdentifier": "com.manna.builtbydustin",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Manna uses speech recognition to turn your spoken words into text on your device.",
+        "NSMicrophoneUsageDescription": "Manna uses the microphone so you can speak your reflection instead of typing.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +27,8 @@
         "foregroundImage": "./assets/android_icons/icon_512.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.manna.builtbydustin"
+      "package": "com.manna.builtbydustin",
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
