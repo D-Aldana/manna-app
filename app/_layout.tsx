@@ -1,4 +1,4 @@
-import { View, Pressable } from "react-native"
+import { View, Pressable, Text, useWindowDimensions } from "react-native"
 import { Drawer } from "expo-router/drawer"
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer"
 import { Feather } from "@expo/vector-icons"
@@ -44,6 +44,31 @@ const ThemeLabel = styled.Text({
   letterSpacing: 0.3,
 })
 
+const NAV_ITEMS = [
+  { label: "New Pouring", icon: "droplet", route: "index" },
+  { label: "Past Reflections", icon: "book", route: "(history)" },
+  { label: "Support Manna", icon: "gift", route: "support" },
+  { label: "Share Feedback", icon: "message-circle", route: "feedback" },
+] as const
+
+function NavLabel({ color, label }: { color: string; label: string }) {
+  return (
+    <Text
+      numberOfLines={1}
+      adjustsFontSizeToFit
+      minimumFontScale={0.8}
+      style={{
+        color,
+        fontFamily: "Nunito_600SemiBold",
+        fontSize: 16,
+        letterSpacing: 0.3,
+      }}
+    >
+      {label}
+    </Text>
+  )
+}
+
 function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScrollView>) {
   const { theme, mode, toggleTheme } = useTheme()
   const currentIndex = props.state.index
@@ -54,68 +79,19 @@ function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScr
         <AppName style={{ color: theme.accent }}>manna</AppName>
         <Divider style={{ backgroundColor: theme.border }} />
 
-        <DrawerItem
-          label="New Pouring"
-          focused={currentIndex === 0}
-          activeTintColor={theme.accent}
-          inactiveTintColor={theme.textSecondary}
-          activeBackgroundColor={theme.background}
-          icon={({ color, size }) => <Feather name="droplet" size={size} color={color} />}
-          labelStyle={{
-            fontFamily: "Nunito_600SemiBold",
-            fontSize: 16,
-            letterSpacing: 0.3,
-          }}
-          style={{ borderRadius: 12, marginHorizontal: 8 }}
-          onPress={() => props.navigation.navigate("index")}
-        />
-        <DrawerItem
-          label="Past Reflections"
-          focused={currentIndex === 1}
-          activeTintColor={theme.accent}
-          inactiveTintColor={theme.textSecondary}
-          activeBackgroundColor={theme.background}
-          icon={({ color, size }) => <Feather name="book" size={size} color={color} />}
-          labelStyle={{
-            fontFamily: "Nunito_600SemiBold",
-            fontSize: 16,
-            letterSpacing: 0.3,
-          }}
-          style={{ borderRadius: 12, marginHorizontal: 8 }}
-          onPress={() => props.navigation.navigate("(history)")}
-        />
-
-        <DrawerItem
-          label="Support Manna"
-          focused={currentIndex === 2}
-          activeTintColor={theme.accent}
-          inactiveTintColor={theme.textSecondary}
-          activeBackgroundColor={theme.background}
-          icon={({ color, size }) => <Feather name="gift" size={size} color={color} />}
-          labelStyle={{
-            fontFamily: "Nunito_600SemiBold",
-            fontSize: 16,
-            letterSpacing: 0.3,
-          }}
-          style={{ borderRadius: 12, marginHorizontal: 8 }}
-          onPress={() => props.navigation.navigate("support")}
-        />
-
-        <DrawerItem
-          label="Share Feedback"
-          focused={currentIndex === 3}
-          activeTintColor={theme.accent}
-          inactiveTintColor={theme.textSecondary}
-          activeBackgroundColor={theme.background}
-          icon={({ color, size }) => <Feather name="message-circle" size={size} color={color} />}
-          labelStyle={{
-            fontFamily: "Nunito_600SemiBold",
-            fontSize: 16,
-            letterSpacing: 0.3,
-          }}
-          style={{ borderRadius: 12, marginHorizontal: 8 }}
-          onPress={() => props.navigation.navigate("feedback")}
-        />
+        {NAV_ITEMS.map((item, index) => (
+          <DrawerItem
+            key={item.route}
+            label={({ color }) => <NavLabel color={color} label={item.label} />}
+            focused={currentIndex === index}
+            activeTintColor={theme.accent}
+            inactiveTintColor={theme.textSecondary}
+            activeBackgroundColor={theme.background}
+            icon={({ color, size }) => <Feather name={item.icon} size={size} color={color} />}
+            style={{ borderRadius: 12, marginHorizontal: 8 }}
+            onPress={() => props.navigation.navigate(item.route)}
+          />
+        ))}
 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Svg width={240} height={240} viewBox="0 0 466 466" opacity={0.1}>
@@ -143,6 +119,7 @@ function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScr
 
 function DrawerLayout() {
   const { theme } = useTheme()
+  const { width } = useWindowDimensions()
 
   return (
     <Drawer
@@ -151,7 +128,7 @@ function DrawerLayout() {
         headerShown: false,
         drawerStyle: {
           backgroundColor: theme.surface,
-          width: 260,
+          width: Math.min(300, width * 0.85),
         },
       }}
     >
