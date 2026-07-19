@@ -1,9 +1,9 @@
 import { useState } from "react"
-import { Pressable } from "react-native"
+import { Platform, Pressable } from "react-native"
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
-import { useRouter } from "expo-router"
+import { Redirect, useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import * as Haptics from "expo-haptics"
 import { useTheme } from "@/theme/ThemeContext"
@@ -94,6 +94,9 @@ export default function SupportScreen() {
   const insets = useSafeAreaInsets()
   const router = useRouter()
   const [failed, setFailed] = useState(false)
+
+  // Tip Jar is unavailable on iOS to comply with App Store Guideline 3.1.1 (donations require IAP)
+  if (Platform.OS === "ios") return <Redirect href="/" />
 
   const handleSupport = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
