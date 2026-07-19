@@ -1,4 +1,4 @@
-import { View, Pressable, Text, useWindowDimensions } from "react-native"
+import { View, Pressable, Text, useWindowDimensions, Platform } from "react-native"
 import { Drawer } from "expo-router/drawer"
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer"
 import { Feather } from "@expo/vector-icons"
@@ -71,7 +71,10 @@ function NavLabel({ color, label }: { color: string; label: string }) {
 
 function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScrollView>) {
   const { theme, mode, toggleTheme } = useTheme()
-  const currentIndex = props.state.index
+  const activeRoute = props.state.routes[props.state.index]?.name
+
+  // Tip Jar is gated off iOS to comply with App Store Guideline 3.1.1 (donations require IAP)
+  const navItems = NAV_ITEMS.filter((item) => Platform.OS !== "ios" || item.route !== "support")
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
@@ -79,11 +82,11 @@ function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScr
         <AppName style={{ color: theme.accent }}>manna</AppName>
         <Divider style={{ backgroundColor: theme.border }} />
 
-        {NAV_ITEMS.map((item, index) => (
+        {navItems.map((item) => (
           <DrawerItem
             key={item.route}
             label={({ color }) => <NavLabel color={color} label={item.label} />}
-            focused={currentIndex === index}
+            focused={activeRoute === item.route}
             activeTintColor={theme.accent}
             inactiveTintColor={theme.textSecondary}
             activeBackgroundColor={theme.background}
