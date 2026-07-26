@@ -13,6 +13,7 @@ import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
 import { useNavigation, useFocusEffect } from "expo-router"
+import * as Linking from "expo-linking"
 import { DrawerActions } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import AsyncStorage from "@react-native-async-storage/async-storage"
@@ -481,6 +482,7 @@ export default function PouringScreen() {
   const [saved, setSaved] = useState(false)
   const [inputExpanded, setInputExpanded] = useState(false)
   const [error, setError] = useState("")
+  const [care, setCare] = useState(false)
   const [restoring, setRestoring] = useState(true)
   const [keyboardVisible, setKeyboardVisible] = useState(false)
   const titleFullText = "What\u2019s on your heart?"
@@ -625,13 +627,20 @@ export default function PouringScreen() {
       setLoading(true)
       screenOpacity.current.setValue(1)
       setError("")
+      setCare(false)
       setInputExpanded(false)
       try {
         const result = await reflect(text)
-        const reflection = { input: text, ...result }
-        setResponse(reflection)
-        await AsyncStorage.setItem(CURRENT_REFLECTION_KEY, JSON.stringify(reflection))
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        if ("care" in result) {
+          // Crisis path — show the care screen; keep their words, don't cache.
+          setResponse(null)
+          setCare(true)
+        } else {
+          const reflection = { input: text, ...result }
+          setResponse(reflection)
+          await AsyncStorage.setItem(CURRENT_REFLECTION_KEY, JSON.stringify(reflection))
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        }
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : JSON.stringify(err)
         console.error("Reflect failed:", message)
@@ -672,8 +681,15 @@ export default function PouringScreen() {
     setText("")
     setSaved(false)
     setError("")
+    setCare(false)
     setInputExpanded(false)
     await AsyncStorage.removeItem(CURRENT_REFLECTION_KEY)
+  }
+
+  // Back from the care screen to the input, keeping their words.
+  const handleCareReturn = () => {
+    setCare(false)
+    setSubmitted(false)
   }
 
   const { share: handleShare, renderShareImage } = useShareVerse({
@@ -693,6 +709,60 @@ export default function PouringScreen() {
             <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
           </FadeIn>
         </LoadingContainer>
+      </GradientBg>
+    )
+  }
+
+  if (submitted && care) {
+    return (
+      <GradientBg colors={theme.backgroundGradient}>
+        <MenuButton
+          onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+          style={{ top: insets.top + 8 }}
+        >
+          <Feather name="menu" size={20} color={theme.textSecondary} />
+        </MenuButton>
+        <Container style={{ paddingTop: insets.top + 48 }}>
+          <Feather name="heart" size={40} color={theme.accent} style={{ marginBottom: 24 }} />
+          <Title style={{ color: theme.accent, marginBottom: 16 }}>You are not alone</Title>
+          <Prayer style={{ color: theme.text, textAlign: "center", marginBottom: 4 }}>
+            &ldquo;The LORD is near to the brokenhearted; He saves the contrite in spirit.&rdquo;
+          </Prayer>
+          <VerseRef style={{ color: theme.textSecondary, marginTop: 0, marginBottom: 24 }}>
+            — Psalm 34:18
+          </VerseRef>
+          <Commentary
+            style={{
+              color: theme.textSecondary,
+              textAlign: "center",
+              marginBottom: 28,
+              maxWidth: CONTENT_MAX_WIDTH,
+            }}
+          >
+            What you poured out is heavy, and you don&rsquo;t have to carry it by yourself. Please
+            reach out — a caring person is ready to listen, right now.
+          </Commentary>
+          <BackButton
+            style={{ backgroundColor: theme.accent }}
+            onPress={() => Linking.openURL("tel:988")}
+          >
+            <BackText style={{ color: theme.background }}>Call 988</BackText>
+          </BackButton>
+          <VoiceHint style={{ color: theme.textSecondary, marginTop: 0, marginBottom: 24 }}>
+            988 is the Suicide & Crisis Lifeline (US & Canada), by call or text, any hour. Outside
+            the US, findahelpline.com lists help near you.
+          </VoiceHint>
+          <BackButton
+            style={{
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              borderWidth: 1,
+            }}
+            onPress={handleCareReturn}
+          >
+            <BackText style={{ color: theme.text }}>Return to Your Words</BackText>
+          </BackButton>
+        </Container>
       </GradientBg>
     )
   }

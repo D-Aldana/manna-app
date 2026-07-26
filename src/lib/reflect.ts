@@ -7,11 +7,15 @@ type ReflectResponse = {
   prayer: string
 }
 
-export async function reflect(input: string): Promise<ReflectResponse> {
+// Crisis/sensitive Pourings get a care response instead of a verse; the app
+// renders a dedicated screen with crisis resources.
+export type ReflectResult = ReflectResponse | { care: true }
+
+export async function reflect(input: string): Promise<ReflectResult> {
   // reflect runs with verify_jwt=true, so we need an (anonymous) session token.
   await ensureSession()
 
-  const { data, error } = await supabase.functions.invoke<ReflectResponse>("reflect", {
+  const { data, error } = await supabase.functions.invoke<ReflectResult>("reflect", {
     body: { input },
   })
 
