@@ -34,6 +34,11 @@ Rules for verse_ref:
 - Use full book names. Use "Psalm" or "Psalms" — not "Ps".
 - Must be a real verse in the standard Protestant canon.
 
+Rules for prayer:
+- Write it in the first person, as the user's own prayer to God ("Lord, help me..."), so they can pray it aloud themselves. Never pray about the user in the third person.
+
+If the user expresses suicidal thoughts, self-harm, or intent to harm others, do not choose a verse. Respond with ONLY: {"crisis":true}
+
 Warm and personal, not formulaic.`
 
 const CORS_HEADERS = {
@@ -45,6 +50,12 @@ type ClaudeReflection = {
   verse_ref: string
   commentary: string
   prayer: string
+}
+
+type ClaudeResult = ClaudeReflection | { crisis: true }
+
+function isCrisis(result: ClaudeResult): result is { crisis: true } {
+  return "crisis" in result
 }
 
 // Cache the DB-sourced prompt across warm invocations so edits propagate within
@@ -125,10 +136,19 @@ Deno.serve(async (req) => {
 
     const systemPrompt = await getSystemPrompt(supabase)
     let reflection = await callClaude(input, systemPrompt)
+    // Crisis content (or a model refusal on it) gets a dedicated care response
+    // instead of a verse; the app renders it specially.
+    if (isCrisis(reflection)) {
+      return jsonResponse({ care: true })
+    }
     let verse = await resolveVerse(reflection.verse_ref, verseSource, supabase)
 
     if (verse.status === "not_found" || verse.status === "unparseable") {
-      reflection = await callClaude(input, systemPrompt, reflection.verse_ref)
+      const retry = await callClaude(input, systemPrompt, reflection.verse_ref)
+      if (isCrisis(retry)) {
+        return jsonResponse({ care: true })
+      }
+      reflection = retry
       verse = await resolveVerse(reflection.verse_ref, verseSource, supabase)
     }
 
@@ -153,7 +173,7 @@ async function callClaude(
   input: string,
   systemPrompt: string,
   badRef?: string,
-): Promise<ClaudeReflection> {
+): Promise<ClaudeResult> {
   const messages: Array<{ role: string; content: string }> = [{ role: "user", content: input }]
   if (badRef) {
     messages.push({
@@ -187,9 +207,20 @@ async function callClaude(
   }
 
   const data = await response.json()
-  const raw = data.content[0].text
+  const raw = data.content?.[0]?.text ?? ""
   const cleaned = raw.replace(/```json\s*|```\s*/g, "").trim()
-  const parsed = JSON.parse(cleaned)
+
+  // Prose with no JSON at all is a safety refusal (crisis content makes the
+  // model decline the format entirely); malformed JSON is still a real error.
+  if (!cleaned.includes("{")) {
+    console.warn("Claude declined JSON format; routing to care response")
+    return { crisis: true }
+  }
+
+  const parsed = JSON.parse(cleaned.slice(cleaned.indexOf("{")))
+  if (parsed.crisis === true) {
+    return { crisis: true }
+  }
   if (!parsed.verse_ref || !parsed.commentary || !parsed.prayer) {
     throw new Error(`Claude returned incomplete JSON: ${cleaned.slice(0, 200)}`)
   }
