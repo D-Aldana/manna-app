@@ -998,11 +998,21 @@ export default function PouringScreen() {
                     style={{ opacity: guide.current }}
                   >
                     {placeholder.text.length > 0 && (
-                      <OverlayPlaceholder style={{ color: theme.textSecondary }}>
+                      // Hidden instantly (not unmounted) so the chips below keep
+                      // their position while they fade out.
+                      <OverlayPlaceholder
+                        pointerEvents="none"
+                        style={{
+                          color: hexToRgba(theme.textSecondary, 0.55),
+                          opacity: text.length === 0 ? 1 : 0,
+                        }}
+                      >
                         {placeholder.text}
                       </OverlayPlaceholder>
                     )}
-                    <ChipRow>
+                    {/* box-none: only the chips themselves catch taps; empty space
+                        falls through so the input underneath can be focused */}
+                    <ChipRow pointerEvents="box-none">
                       {promptSeeds.map((seed) => (
                         <Chip
                           key={seed.value}
