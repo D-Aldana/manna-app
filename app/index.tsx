@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from "react"
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react"
 import {
   TextInput,
   ScrollView,
@@ -12,7 +12,7 @@ import {
 import styled from "@emotion/native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Feather } from "@expo/vector-icons"
-import { useNavigation } from "expo-router"
+import { useNavigation, useFocusEffect } from "expo-router"
 import { DrawerActions } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import AsyncStorage from "@react-native-async-storage/async-storage"
@@ -23,21 +23,12 @@ import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
 import { useVoiceInput } from "@/lib/useVoiceInput"
 import { useShareVerse } from "@/components/ShareVerseImage"
-
-const STORAGE_KEY = "manna_current_reflection"
+import { CURRENT_REFLECTION_KEY, type CurrentReflection } from "@/lib/currentReflection"
 
 // Matches the reflect edge function's input cap; the server enforces the same
 // limit as a backstop. Show a countdown once the user nears it.
 const MAX_CHARS = 4000
 const CHARS_WARN_AT = MAX_CHARS - 200
-
-type ReflectionData = {
-  input: string
-  verse_text: string
-  verse_ref: string
-  commentary: string
-  prayer: string
-}
 
 const GradientBg = styled(LinearGradient)({
   flex: 1,
@@ -486,11 +477,12 @@ export default function PouringScreen() {
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [response, setResponse] = useState<ReflectionData | null>(null)
+  const [response, setResponse] = useState<CurrentReflection | null>(null)
   const [saved, setSaved] = useState(false)
   const [inputExpanded, setInputExpanded] = useState(false)
   const [error, setError] = useState("")
   const [restoring, setRestoring] = useState(true)
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
   const titleFullText = "What\u2019s on your heart?"
   const title = useTypewriter(restoring ? "" : titleFullText, 45)
   const placeholder = useTypewriter(restoring ? "" : "Pour it out\u2026", 45, 600)
@@ -525,7 +517,20 @@ export default function PouringScreen() {
     }).start()
   }, [canPour])
 
-  const guideVisible = text.length === 0
+  // Hide the guide overlay while the keyboard is open — the shrunken input
+  // card can't fit the placeholder + chips.
+  useEffect(() => {
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow"
+    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide"
+    const show = Keyboard.addListener(showEvent, () => setKeyboardVisible(true))
+    const hide = Keyboard.addListener(hideEvent, () => setKeyboardVisible(false))
+    return () => {
+      show.remove()
+      hide.remove()
+    }
+  }, [])
+
+  const guideVisible = text.length === 0 && !keyboardVisible
   const guide = useRef(new Animated.Value(1))
 
   useEffect(() => {
@@ -579,16 +584,34 @@ export default function PouringScreen() {
   }
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
+    AsyncStorage.getItem(CURRENT_REFLECTION_KEY).then((stored) => {
       if (stored) {
-        const data = JSON.parse(stored) as ReflectionData
+        const data = JSON.parse(stored) as CurrentReflection
         setResponse(data)
         setText(data.input)
+        setSaved(!!data.entry_id)
         setSubmitted(true)
       }
       setRestoring(false)
     })
   }, [])
+
+  // If the saved entry behind the cached reflection was deleted from history,
+  // the cache is gone too — reset to a fresh input screen on return.
+  useFocusEffect(
+    useCallback(() => {
+      if (!response?.entry_id) return
+      AsyncStorage.getItem(CURRENT_REFLECTION_KEY).then((stored) => {
+        if (!stored) {
+          setSubmitted(false)
+          setResponse(null)
+          setText("")
+          setSaved(false)
+          setInputExpanded(false)
+        }
+      })
+    }, [response?.entry_id]),
+  )
 
   const handleSubmit = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
@@ -607,7 +630,7 @@ export default function PouringScreen() {
         const result = await reflect(text)
         const reflection = { input: text, ...result }
         setResponse(reflection)
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(reflection))
+        await AsyncStorage.setItem(CURRENT_REFLECTION_KEY, JSON.stringify(reflection))
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : JSON.stringify(err)
@@ -631,6 +654,11 @@ export default function PouringScreen() {
         commentary: response.commentary,
         prayer: response.prayer,
       })
+      // Link the cache to the saved entry so deleting it from history clears
+      // this screen too.
+      const linked = { ...response, entry_id: entry.id }
+      setResponse(linked)
+      await AsyncStorage.setItem(CURRENT_REFLECTION_KEY, JSON.stringify(linked))
       setSaved(true)
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : JSON.stringify(err)
@@ -643,8 +671,9 @@ export default function PouringScreen() {
     setResponse(null)
     setText("")
     setSaved(false)
+    setError("")
     setInputExpanded(false)
-    await AsyncStorage.removeItem(STORAGE_KEY)
+    await AsyncStorage.removeItem(CURRENT_REFLECTION_KEY)
   }
 
   const { share: handleShare, renderShareImage } = useShareVerse({
@@ -698,7 +727,7 @@ export default function PouringScreen() {
             ? "The reflection service is temporarily unavailable. Please try again later."
             : isOverloaded
               ? "The service is resting under heavy load. Please try again in a moment."
-              : "We weren\u2019t able to complete your reflection. Your words are still here."
+              : "We weren\u2019t able to complete your reflection. Your words are still here \u2014 try again when you\u2019re ready, or start over with a fresh page."
 
     const icon = isNetwork ? "wifi-off" : isRateLimited || isDailyLimit ? "clock" : "cloud-off"
 

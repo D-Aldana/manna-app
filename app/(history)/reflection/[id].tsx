@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme } from "@/theme/ThemeContext"
 import { CONTENT_MAX_WIDTH } from "@/theme/layout"
 import { getEntry, deleteEntry, type Entry } from "@/lib/entries"
+import { clearCurrentReflectionIfEntry } from "@/lib/currentReflection"
 import { useShareVerse } from "@/components/ShareVerseImage"
 
 const GradientBg = styled(LinearGradient)({
@@ -234,6 +235,7 @@ export default function ReflectionScreen() {
   const handleDelete = async () => {
     if (!id) return
     await deleteEntry(id)
+    await clearCurrentReflectionIfEntry(id)
     setConfirmDelete(false)
     router.back()
   }
