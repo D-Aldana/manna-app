@@ -108,9 +108,9 @@ function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScr
         <Divider style={{ backgroundColor: theme.border }} />
 
         <ThemeRow onPress={toggleTheme}>
-          <Feather name={mode === "light" ? "sun" : "moon"} size={20} color={theme.textSecondary} />
+          <Feather name={mode === "light" ? "moon" : "sun"} size={20} color={theme.textSecondary} />
           <ThemeLabel style={{ color: theme.textSecondary }}>
-            {mode === "light" ? "Light" : "Dark"}
+            {mode === "light" ? "Dark Mode" : "Light Mode"}
           </ThemeLabel>
         </ThemeRow>
 
