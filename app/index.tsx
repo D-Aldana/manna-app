@@ -861,7 +861,7 @@ export default function PouringScreen() {
           </MenuButton>
           <ThemeToggleButton onPress={toggleTheme} style={{ top: insets.top + 8 }}>
             <Feather
-              name={mode === "light" ? "sun" : "moon"}
+              name={mode === "light" ? "moon" : "sun"}
               size={20}
               color={theme.textSecondary}
             />

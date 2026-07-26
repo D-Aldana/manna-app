@@ -118,18 +118,19 @@ const Prayer = styled.Text({
   marginBottom: 24,
 })
 
-const ActionButton = styled.Pressable({
+const DeleteLink = styled.Pressable({
   alignSelf: "center",
-  paddingVertical: 14,
-  paddingHorizontal: 32,
-  borderRadius: 24,
+  flexDirection: "row",
+  alignItems: "center",
+  paddingVertical: 10,
   marginBottom: 16,
 })
 
-const ActionText = styled.Text({
-  fontSize: 16,
+const DeleteLinkText = styled.Text({
+  fontSize: 14,
   fontFamily: "Nunito_600SemiBold",
   letterSpacing: 0.5,
+  marginLeft: 6,
 })
 
 const LoadingContainer = styled.View({
@@ -304,12 +305,10 @@ export default function ReflectionScreen() {
           </VerseContainer>
           <Commentary style={{ color: theme.textSecondary }}>{entry.commentary}</Commentary>
           <Prayer style={{ color: theme.accent }}>{entry.prayer}</Prayer>
-          <ActionButton
-            style={{ backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }}
-            onPress={() => setConfirmDelete(true)}
-          >
-            <ActionText style={{ color: "#c44" }}>Delete</ActionText>
-          </ActionButton>
+          <DeleteLink onPress={() => setConfirmDelete(true)} hitSlop={8}>
+            <Feather name="trash-2" size={14} color={theme.textSecondary} />
+            <DeleteLinkText style={{ color: theme.textSecondary }}>Delete</DeleteLinkText>
+          </DeleteLink>
         </ResponseContainer>
       </Container>
 
