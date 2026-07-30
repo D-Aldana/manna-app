@@ -938,7 +938,13 @@ export default function PouringScreen() {
         : voice.status === "unavailable"
           ? "Voice input isn’t available on this device"
           : voice.status === "error"
-            ? "Didn’t catch that — tap the mic to try again"
+            ? voice.error === "no-speech" || voice.error === "speech-timeout"
+              ? "Didn’t hear anything — tap the mic and speak"
+              : voice.error === "network"
+                ? "Voice input needs a connection right now — try again"
+                : voice.error === "busy"
+                  ? "Still finishing up — tap the mic again in a moment"
+                  : "Voice input didn’t start — tap the mic to try again"
             : null
 
   return (
@@ -1036,39 +1042,46 @@ export default function PouringScreen() {
                 { width: "100%", maxWidth: CONTENT_MAX_WIDTH, alignSelf: "center" },
               ]}
             >
-              {voiceHint ? (
+              {voiceHint && (voice.available || voice.status === "denied") ? (
                 <VoiceHint style={{ color: theme.textSecondary }}>{voiceHint}</VoiceHint>
               ) : null}
-              <Footer style={{ paddingBottom: insets.bottom + 12 }}>
-                <Animated.View
-                  style={{
-                    transform: [
-                      {
-                        scale: micPulse.current.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [1, 1.12],
-                        }),
-                      },
-                    ],
-                  }}
-                >
-                  <MicButton
-                    onPress={toggleVoice}
-                    accessibilityLabel={
-                      voice.isListening ? "Stop listening" : "Speak your reflection"
-                    }
+              <Footer
+                style={{
+                  paddingBottom: insets.bottom + 12,
+                  justifyContent: voice.available ? "space-between" : "flex-end",
+                }}
+              >
+                {voice.available ? (
+                  <Animated.View
                     style={{
-                      backgroundColor: voice.isListening ? theme.accent : "transparent",
-                      borderColor: voice.isListening ? theme.accent : theme.border,
+                      transform: [
+                        {
+                          scale: micPulse.current.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [1, 1.12],
+                          }),
+                        },
+                      ],
                     }}
                   >
-                    <Feather
-                      name="mic"
-                      size={22}
-                      color={voice.isListening ? theme.background : theme.accent}
-                    />
-                  </MicButton>
-                </Animated.View>
+                    <MicButton
+                      onPress={toggleVoice}
+                      accessibilityLabel={
+                        voice.isListening ? "Stop listening" : "Speak your reflection"
+                      }
+                      style={{
+                        backgroundColor: voice.isListening ? theme.accent : "transparent",
+                        borderColor: voice.isListening ? theme.accent : theme.border,
+                      }}
+                    >
+                      <Feather
+                        name="mic"
+                        size={22}
+                        color={voice.isListening ? theme.background : theme.accent}
+                      />
+                    </MicButton>
+                  </Animated.View>
+                ) : null}
                 <FooterRight>
                   <WordCount
                     style={{
