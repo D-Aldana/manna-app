@@ -8,7 +8,7 @@
     "icon": "./assets/ios_icons/icon_1024.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/ios_icons/icon_1024.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFCF5"
     },
@@ -26,7 +26,8 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFCF5",
-        "foregroundImage": "./assets/android_icons/icon_512.png"
+        "foregroundImage": "./assets/android_icons/icon_512.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.manna.builtbydustin",
