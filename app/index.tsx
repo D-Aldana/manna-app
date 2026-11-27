@@ -24,6 +24,7 @@ import { reflect } from "@/lib/reflect"
 import { createEntry, updateEntry } from "@/lib/entries"
 import { useVoiceInput } from "@/lib/useVoiceInput"
 import { useShareVerse } from "@/components/ShareVerseImage"
+import { SelahLoader } from "@/components/SelahLoader"
 import { CURRENT_REFLECTION_KEY, type CurrentReflection } from "@/lib/currentReflection"
 
 // Matches the reflect edge function's input cap; the server enforces the same
@@ -306,100 +307,6 @@ const BackText = styled.Text({
   fontFamily: "Nunito_600SemiBold",
   letterSpacing: 0.5,
 })
-
-const LoadingContainer = styled.View({
-  flex: 1,
-  justifyContent: "center",
-  alignItems: "center",
-})
-
-const SelahText = styled.Text({
-  fontSize: 44,
-  fontFamily: "CormorantGaramond_600SemiBold",
-  fontStyle: "italic",
-  letterSpacing: 2,
-})
-
-const SelahSubtext = styled.Text({
-  fontSize: 14,
-  fontFamily: "Nunito_400Regular",
-  marginTop: 12,
-  letterSpacing: 2,
-})
-
-const selahPhrases = [
-  "be still...",
-  "be present...",
-  "breathe...",
-  "rest here...",
-  "wait in peace...",
-]
-
-function PulsingSelah({ color, subtextColor }: { color: string; subtextColor: string }) {
-  const opacity = useRef(new Animated.Value(0.3))
-  const [phraseIndex, setPhraseIndex] = useState(0)
-  const subtextOpacity = useRef(new Animated.Value(1))
-
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity.current, {
-          toValue: 1,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity.current, {
-          toValue: 0.3,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-      ]),
-    )
-    pulse.start()
-    return () => pulse.stop()
-  }, [])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      Animated.timing(subtextOpacity.current, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
-        setPhraseIndex((prev) => (prev + 1) % selahPhrases.length)
-        Animated.timing(subtextOpacity.current, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }).start()
-      })
-    }, 2400)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <Animated.View style={{ opacity: opacity.current, alignItems: "center" }}>
-      <SelahText style={{ color }}>Selah</SelahText>
-      <Animated.View style={{ opacity: subtextOpacity.current }}>
-        <SelahSubtext style={{ color: subtextColor }}>{selahPhrases[phraseIndex]}</SelahSubtext>
-      </Animated.View>
-    </Animated.View>
-  )
-}
-
-function FadeIn({ children }: { children: ReactNode }) {
-  const opacity = useRef(new Animated.Value(0))
-
-  useEffect(() => {
-    Animated.timing(opacity.current, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start()
-  }, [])
-
-  return <Animated.View style={{ opacity: opacity.current }}>{children}</Animated.View>
-}
 
 function DelayedFadeIn({ delay = 0, children }: { delay?: number; children: ReactNode }) {
   const opacity = useRef(new Animated.Value(0))
@@ -704,11 +611,11 @@ export default function PouringScreen() {
   if (loading) {
     return (
       <GradientBg colors={theme.backgroundGradient}>
-        <LoadingContainer>
-          <FadeIn>
-            <PulsingSelah color={theme.accent} subtextColor={theme.textSecondary} />
-          </FadeIn>
-        </LoadingContainer>
+        <SelahLoader
+          accent={theme.accent}
+          textColor={theme.accent}
+          subtextColor={theme.textSecondary}
+        />
       </GradientBg>
     )
   }
